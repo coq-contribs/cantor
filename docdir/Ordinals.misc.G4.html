@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link href="coqdoc.css" rel="stylesheet" type="text/css"/>
+<title>Ordinals.misc.G4</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Ordinals.misc.G4</h1>
+
+<code>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Arith.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Omega.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Relations.<br/>
+
+<br/>
+<span class="keyword">Record</span> <a name="item"></a>item :Set := quad {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;base: nat ; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;coeff2 :nat ; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;coeff1 :nat ; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;coeff0 :nat     }.<br/>
+
+<br/>
+<span class="keyword">Inductive</span> <a name="Rg"></a>Rg: item -&gt; item -&gt;Prop :=<br/>
+&nbsp;<a name="Rg0"></a>Rg0 : forall b i j k, Rg (quad b i j (S k)) (quad  (S b) i j k)<br/>
+|<a name="Rg1"></a>Rg1 : forall b i j , Rg (quad b i (S j) 0) (quad (S b) i j b)<br/>
+|<a name="Rg2"></a>Rg2 : forall b i  , Rg (quad b (S i) 0 0)  (quad (S b) i b b).<br/>
+
+<br/>
+<span class="keyword">Hint</span> Constructors Rg.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="Rgstar"></a>Rgstar := clos_refl_trans _ Rg.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="reachable"></a>reachable (q:item) := Rgstar (quad 3 2 2 2) q.<br/>
+
+<br/>
+<span class="keyword">Hint</span> Unfold reachable.<br/>
+
+<br/>
+<span class="keyword">Hint</span> Constructors clos_refl_trans.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="reachable_Rgstar"></a>reachable_Rgstar : forall q q', reachable q -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rgstar q q' -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;reachable q'.<br/>
+
+<br/>
+<span class="keyword">Inductive</span> <a name="final"></a>final : item -&gt; Prop :=<br/>
+&nbsp;<a name="final_intro"></a>final_intro :forall b , final (quad b 0 0 0).<br/>
+
+<br/>
+<span class="keyword">Hint</span> Constructors final.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="final_no_future"></a>final_no_future : forall q, final q -&gt; forall q', ~ Rg q q'.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="next"></a>next (q:item) : {q' : item | Rg q q'} + {final q}.<br/>
+
+<br/>
+<span class="keyword">Fixpoint</span> <a name="nexts"></a>nexts (n:nat)(q:item){struct n} : option item :=<br/>
+&nbsp;&nbsp;match n with 0 =&gt; Some q<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| S p =&gt; (match (next q) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with  | inleft (exist q' _) =&gt;  nexts p q'<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| inright  _ =&gt; None<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end)<br/>
+&nbsp;&nbsp;end.<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="next_unicity"></a>next_unicity : forall q q' q'',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rg q q' -&gt; Rg q q'' -&gt; q' = q''.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="nexts_plus"></a>nexts_plus : forall n p q , nexts (n+p) q = match (nexts n q)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with Some q' =&gt; nexts p q' |<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;None =&gt; None end.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="nexts_ok"></a>nexts_ok : forall n q q', nexts n q  = Some q' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rgstar q q'.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="nexts_ok_R"></a>nexts_ok_R : forall q q', Rgstar q q' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exists n, nexts n q  = Some q'.<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="nth_item"></a>nth_item n := nexts n (quad 3 2 2 2).<br/>
+
+<br/>
+Eval compute in nth_item 0.<br/>
+Eval compute in nth_item 2.<br/>
+
+<br/>
+Eval compute in nth_item 3.<br/>
+
+<br/>
+Eval compute in nth_item 8.<br/>
+Eval compute in nth_item 20.<br/>
+Eval compute in nth_item 21.<br/>
+
+<br/>
+Eval compute in nth_item 44.<br/>
+Eval compute in nth_item 92.<br/>
+
+<br/>
+Eval compute in nth_item 188.<br/>
+
+<br/>
+<span class="keyword">Fixpoint</span> <a name="power"></a>power (b:nat)(n:nat){struct n}:nat :=<br/>
+&nbsp;match n with 0 =&gt; 1<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| S p =&gt; b * b ^ p<br/>
+&nbsp;end<br/>
+where  "n ^ p" := (power n p):nat_scope.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="f"></a>f n := pred (3 * 2^n).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="f_Sn"></a>f_Sn : forall n,  f (S n) = S (2*(f n)).<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="L1"></a>L1 :  forall k i j b, <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rgstar (quad b i j (S k)) (quad (S k + b) i j 0).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="L2"></a>L2 :  forall k i j b, <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rgstar (quad b i j k) (quad (k + b) i j 0).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="L3"></a>L3 : forall b i j, <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;Rgstar (quad b i (S j) 0) (quad (S (2 * b)) i j 0).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="L4"></a>L4 :  forall b i j,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;reachable (quad (f b) i (S j) 0) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;reachable (quad (f (S b)) i j 0).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="L5"></a>L5 :  forall k b i j, <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;reachable (quad (f b) i (k+j) 0) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;reachable (quad (f (k+b)) i j 0).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="F1"></a>F1 : reachable (quad (f 1) 2 2 0).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="F2"></a>F2 : reachable (quad (f 2) 2 1 0).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="F3"></a>F3 : reachable (quad (f 3) 2 0 0).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="SF3"></a>SF3 : reachable (quad (S (f 3)) 1 (f 3) (f 3)).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="F4"></a>F4 : reachable (quad (f 4) 1 (f 3) 0).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="F27"></a>F27 :  reachable (quad (f 27) 1 0 0).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="SF27"></a>SF27 : reachable (quad (S (f 27)) 0 (f 27) (f 27)).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="F28"></a>F28 : reachable (quad (f 28) 0 (f 27) 0).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="Final"></a>Final : reachable (quad (f (f 27 + 28)) 0 0 0).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="big_number_eq"></a>big_number_eq : f (f 27 + 28) = <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3 * 2 ^ (3 * 2 ^ (3 ^3) + 3 ^3) - 1.<br/>
+
+<br/>
+<span class="keyword">Theorem</span> <a name="G4_length"></a>G4_length : reachable<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(quad<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(3 * 2 ^ (3 * 2 ^ (3 ^3) + 3 ^3) - 1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0).<br/>
+
+<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> ZArith.<br/>
+
+<br/>
+Open Scope Z_scope.<br/>
+<span class="keyword">Definition</span> <a name="f_Z"></a>f_Z n := 3*(Zpower 2 n)-1.<br/>
+
+<br/>
+Eval compute in  (f_Z 27 + 28).<br/>
+
+<br/>
+</code>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/><font size="-1">This page has been generated by <a href="http://coq.inria.fr">coqdoc</a></font>
+</div>
+
+</div>
+
+</body>
+</html>

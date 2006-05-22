@@ -1,0 +1,63 @@
+prelude/AccP.vo: prelude/AccP.v
+prelude/AccP.vi: prelude/AccP.v
+prelude/closure.vo: prelude/closure.v
+prelude/closure.vi: prelude/closure.v
+prelude/decidable_set.vo: prelude/decidable_set.v
+prelude/decidable_set.vi: prelude/decidable_set.v
+prelude/dickson.vo: prelude/dickson.v prelude/closure.vo prelude/more_list.vo prelude/list_permut.vo
+prelude/dickson.vi: prelude/dickson.v prelude/closure.vo prelude/more_list.vo prelude/list_permut.vo
+prelude/list_permut.vo: prelude/list_permut.v prelude/decidable_set.vo prelude/more_list.vo
+prelude/list_permut.vi: prelude/list_permut.v prelude/decidable_set.vo prelude/more_list.vo
+prelude/list_set.vo: prelude/list_set.v prelude/more_list.vo prelude/list_permut.vo
+prelude/list_set.vi: prelude/list_set.v prelude/more_list.vo prelude/list_permut.vo
+prelude/more_list.vo: prelude/more_list.v
+prelude/more_list.vi: prelude/more_list.v
+prelude/More_nat.vo: prelude/More_nat.v
+prelude/More_nat.vi: prelude/More_nat.v
+prelude/not_decreasing.vo: prelude/not_decreasing.v
+prelude/not_decreasing.vi: prelude/not_decreasing.v
+prelude/PartialFix.vo: prelude/PartialFix.v
+prelude/PartialFix.vi: prelude/PartialFix.v
+prelude/Tools.vo: prelude/Tools.v
+prelude/Tools.vi: prelude/Tools.v
+rpo/rpo.vo: rpo/rpo.v prelude/more_list.vo prelude/list_permut.vo prelude/dickson.vo rpo/term.vo
+rpo/rpo.vi: rpo/rpo.v prelude/more_list.vo prelude/list_permut.vo prelude/dickson.vo rpo/term.vo
+rpo/term.vo: rpo/term.v prelude/more_list.vo prelude/list_permut.vo prelude/list_set.vo
+rpo/term.vi: rpo/term.v prelude/more_list.vo prelude/list_permut.vo prelude/list_set.vo
+epsilon0/EPSILON0.vo: epsilon0/EPSILON0.v prelude/Tools.vo prelude/More_nat.vo prelude/AccP.vo prelude/not_decreasing.vo rpo/term.vo rpo/rpo.vo
+epsilon0/EPSILON0.vi: epsilon0/EPSILON0.v prelude/Tools.vo prelude/More_nat.vo prelude/AccP.vo prelude/not_decreasing.vo rpo/term.vo rpo/rpo.vo
+epsilon0/Goodstein.vo: epsilon0/Goodstein.v prelude/More_nat.vo epsilon0/EPSILON0.vo
+epsilon0/Goodstein.vi: epsilon0/Goodstein.v prelude/More_nat.vo epsilon0/EPSILON0.vo
+epsilon0/Hydra.vo: epsilon0/Hydra.v epsilon0/EPSILON0.vo epsilon0/MSE0.vo
+epsilon0/Hydra.vi: epsilon0/Hydra.v epsilon0/EPSILON0.vo epsilon0/MSE0.vo
+epsilon0/MSE0.vo: epsilon0/MSE0.v prelude/More_nat.vo epsilon0/EPSILON0.vo
+epsilon0/MSE0.vi: epsilon0/MSE0.v prelude/More_nat.vo epsilon0/EPSILON0.vo
+gamma0/Gamma0_length.vo: gamma0/Gamma0_length.v prelude/Tools.vo prelude/More_nat.vo prelude/AccP.vo gamma0/Gamma0_prelude.vo
+gamma0/Gamma0_length.vi: gamma0/Gamma0_length.v prelude/Tools.vo prelude/More_nat.vo prelude/AccP.vo gamma0/Gamma0_prelude.vo
+gamma0/Gamma0_prelude.vo: gamma0/Gamma0_prelude.v prelude/Tools.vo prelude/More_nat.vo prelude/AccP.vo prelude/not_decreasing.vo epsilon0/EPSILON0.vo
+gamma0/Gamma0_prelude.vi: gamma0/Gamma0_prelude.v prelude/Tools.vo prelude/More_nat.vo prelude/AccP.vo prelude/not_decreasing.vo epsilon0/EPSILON0.vo
+gamma0/Gamma0.vo: gamma0/Gamma0.v epsilon0/EPSILON0.vo prelude/Tools.vo prelude/More_nat.vo prelude/AccP.vo prelude/not_decreasing.vo gamma0/Gamma0_prelude.vo gamma0/Gamma0_length.vo rpo/term.vo rpo/rpo.vo
+gamma0/Gamma0.vi: gamma0/Gamma0.v epsilon0/EPSILON0.vo prelude/Tools.vo prelude/More_nat.vo prelude/AccP.vo prelude/not_decreasing.vo gamma0/Gamma0_prelude.vo gamma0/Gamma0_length.vo rpo/term.vo rpo/rpo.vo
+misc/G4.vo: misc/G4.v
+misc/G4.vi: misc/G4.v
+prelude/AccP.html: prelude/AccP.v
+prelude/closure.html: prelude/closure.v
+prelude/decidable_set.html: prelude/decidable_set.v
+prelude/dickson.html: prelude/dickson.v prelude/closure.html prelude/more_list.html prelude/list_permut.html
+prelude/list_permut.html: prelude/list_permut.v prelude/decidable_set.html prelude/more_list.html
+prelude/list_set.html: prelude/list_set.v prelude/more_list.html prelude/list_permut.html
+prelude/more_list.html: prelude/more_list.v
+prelude/More_nat.html: prelude/More_nat.v
+prelude/not_decreasing.html: prelude/not_decreasing.v
+prelude/PartialFix.html: prelude/PartialFix.v
+prelude/Tools.html: prelude/Tools.v
+rpo/rpo.html: rpo/rpo.v prelude/more_list.html prelude/list_permut.html prelude/dickson.html rpo/term.html
+rpo/term.html: rpo/term.v prelude/more_list.html prelude/list_permut.html prelude/list_set.html
+epsilon0/EPSILON0.html: epsilon0/EPSILON0.v prelude/Tools.html prelude/More_nat.html prelude/AccP.html prelude/not_decreasing.html rpo/term.html rpo/rpo.html
+epsilon0/Goodstein.html: epsilon0/Goodstein.v prelude/More_nat.html epsilon0/EPSILON0.html
+epsilon0/Hydra.html: epsilon0/Hydra.v epsilon0/EPSILON0.html epsilon0/MSE0.html
+epsilon0/MSE0.html: epsilon0/MSE0.v prelude/More_nat.html epsilon0/EPSILON0.html
+gamma0/Gamma0_length.html: gamma0/Gamma0_length.v prelude/Tools.html prelude/More_nat.html prelude/AccP.html gamma0/Gamma0_prelude.html
+gamma0/Gamma0_prelude.html: gamma0/Gamma0_prelude.v prelude/Tools.html prelude/More_nat.html prelude/AccP.html prelude/not_decreasing.html epsilon0/EPSILON0.html
+gamma0/Gamma0.html: gamma0/Gamma0.v epsilon0/EPSILON0.html prelude/Tools.html prelude/More_nat.html prelude/AccP.html prelude/not_decreasing.html gamma0/Gamma0_prelude.html gamma0/Gamma0_length.html rpo/term.html rpo/rpo.html
+misc/G4.html: misc/G4.v

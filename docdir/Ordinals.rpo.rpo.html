@@ -1,0 +1,652 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link href="coqdoc.css" rel="stylesheet" type="text/css"/>
+<title>Ordinals.rpo.rpo</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Ordinals.rpo.rpo</h1>
+
+<code>
+<span class="keyword">Require</span> <span class="keyword">Import</span> List.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.prelude.more_list.html">more_list</a>.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.prelude.list_permut.html">list_permut</a>.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.prelude.dickson.html">dickson</a>.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Relations.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Wellfounded.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Arith.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Wf_nat.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.rpo.term.html">term</a>.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+A non-dependant version of lexicographic extension. 
+</div>
+<code>
+<span class="keyword">Definition</span> <a name="lex"></a>lex (A B : Set) (eq_A_dec : forall a1 a2, {a1=a2}+{a1&lt;&gt;a2}) <br/>
+(o1 : relation A) (o2 : relation B) (s t : _ * _) :=<br/>
+&nbsp;&nbsp;match s with<br/>
+&nbsp;&nbsp;| (s1,s2) =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;match t with<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| (t1,t2) =&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if eq_A_dec s1 t1<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;then o2 s2 t2<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else o1 s1 t1<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end<br/>
+&nbsp;&nbsp;&nbsp;end.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+Transitivity of  lexicographic extension. 
+</div>
+<code>
+<span class="keyword">Lemma</span> <a name="lex_trans"></a>lex_trans :<br/>
+&nbsp;forall (A B : Set) eq_A_dec o1 o2, <br/>
+&nbsp;antisymmetric A o1 -&gt; transitive A o1 -&gt; transitive B o2 -&gt;<br/>
+&nbsp;transitive _ (lex _ _ eq_A_dec o1 o2).<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+Well-foundedness of  lexicographic extension. 
+</div>
+<code>
+<span class="keyword">Lemma</span> <a name="wf_lex"></a>wf_lex :<br/>
+&nbsp;&nbsp;forall A B eq_A_dec o1 o2, well_founded o1 -&gt; well_founded o2 -&gt;<br/>
+&nbsp;&nbsp;well_founded (lex A B eq_A_dec o1 o2).<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+<a name="lab22"></a><h2>Module Type Precedence,</h2 class="section">
+
+<a name="lab23"></a><h2>Definition of a precedence.</h2 class="section">
+
+</div>
+<code>
+<span class="keyword">Module</span> Type <a name="Precedence"></a>Precedence.<br/>
+<span class="keyword">Parameter</span> <a name="A"></a>A : Set.<br/>
+<span class="keyword">Parameter</span> <a name="prec"></a>prec : relation A.<br/>
+
+<br/>
+<span class="keyword">Inductive</span> <a name="status_type"></a>status_type : Set :=<br/>
+&nbsp;&nbsp;| <a name="Lex"></a>Lex : status_type<br/>
+&nbsp;&nbsp;| <a name="Mul"></a>Mul : status_type.<br/>
+
+<br/>
+<span class="keyword">Parameter</span> <a name="status"></a>status : A -&gt; status_type.<br/>
+
+<br/>
+<span class="keyword">Axiom</span> <a name="prec_dec"></a>prec_dec : forall a1 a2 : A, {prec a1 a2} + {~ prec a1 a2}.<br/>
+<span class="keyword">Axiom</span> <a name="prec_antisym"></a>prec_antisym : forall s, prec s s -&gt; False.<br/>
+<span class="keyword">Axiom</span> <a name="prec_transitive"></a>prec_transitive : transitive A prec.<br/>
+
+<br/>
+<span class="keyword">End</span> Precedence.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+<a name="lab24"></a><h2>Module Type RPO,</h2 class="section">
+
+<a name="lab25"></a><h2>Definition of RPO from a precedence on symbols.</h2 class="section">
+
+</div>
+<code>
+
+<br/>
+<span class="keyword">Module</span> Type <a name="RPO"></a>RPO.<br/>
+
+<br/>
+Declare <span class="keyword">Module</span> <a name="T"></a>T : term.Term.<br/>
+Declare <span class="keyword">Module</span> <a name="P"></a>P : Precedence with <span class="keyword">Definition</span> <a name="A"></a>A:= T.symbol.<br/>
+
+<br/>
+<span class="keyword">Import</span> T.<br/>
+<span class="keyword">Import</span> P.<br/>
+Declare <span class="keyword">Module</span> <a name="LP"></a>LP : list_permut.Permut with <span class="keyword">Definition</span> <a name="DS"></a>DS.A:=term.<br/>
+<span class="keyword">Import</span> LP.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+<a name="lab26"></a><h2>Definition of rpo.</h2 class="section">
+
+</div>
+<code>
+<span class="keyword">Inductive</span> <a name="rpo"></a>rpo : term -&gt; term -&gt; Prop :=<br/>
+&nbsp;&nbsp;| <a name="Subterm"></a>Subterm : forall f l t s, In s l -&gt; rpo_eq t s -&gt; rpo t (Term f l)<br/>
+&nbsp;&nbsp;| <a name="Top_gt"></a>Top_gt : <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forall f g l l', prec g f -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(forall s', In s' l' -&gt; rpo s' (Term f l)) -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rpo (Term g l') (Term f l)<br/>
+&nbsp;&nbsp;| <a name="Top_eq_lex"></a>Top_eq_lex : <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forall f l l', status f = Lex -&gt; rpo_lex l' l -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(forall s', In s' l' -&gt; rpo s' (Term f l)) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rpo (Term f l') (Term f l)<br/>
+<br/>
+&nbsp;&nbsp;| <a name="Top_eq_mul"></a>Top_eq_mul : <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forall f l l', status f = Mul -&gt; rpo_mul l' l -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rpo (Term f l') (Term f l)<br/>
+<br/>
+with <a name="rpo_eq"></a>rpo_eq : term -&gt; term -&gt; Prop :=<br/>
+&nbsp;&nbsp;| <a name="Eq"></a>Eq : forall t, rpo_eq t t<br/>
+&nbsp;&nbsp;| <a name="Lt"></a>Lt : forall s t, rpo s t -&gt; rpo_eq s t<br/>
+<br/>
+with <a name="rpo_lex"></a>rpo_lex : list term -&gt; list term -&gt; Prop :=<br/>
+&nbsp;&nbsp;| <a name="List_gt"></a>List_gt : <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forall s t l l', rpo s t -&gt; length l = length l' -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rpo_lex (s :: l) (t :: l')<br/>
+&nbsp;&nbsp;| <a name="List_eq"></a>List_eq : forall s l l', rpo_lex l l' -&gt; rpo_lex (s :: l) (s :: l')<br/>
+<br/>
+with <a name="rpo_mul"></a>rpo_mul : list term -&gt; list term -&gt; Prop :=<br/>
+&nbsp;&nbsp;| <a name="List_mul"></a>List_mul : <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forall a lg ls lc l l', <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list_permut l' (ls ++ lc) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list_permut l (a :: lg ++ lc) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(forall b, In b ls -&gt; exists a', In a' (a :: lg) /\ rpo b a') -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rpo_mul l' l.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+<a name="lab27"></a><h2>rpo is a preorder, and its reflexive closure is an ordering.</h2 class="section">
+
+</div>
+<code>
+<span class="keyword">Axiom</span> <a name="rpo_closure"></a>rpo_closure :<br/>
+&nbsp;&nbsp;forall s t u, <br/>
+&nbsp;&nbsp;(rpo t s -&gt; rpo u t -&gt; rpo u s) /\<br/>
+&nbsp;&nbsp;(rpo s t -&gt; rpo t s -&gt; False) /\<br/>
+&nbsp;&nbsp;(rpo s s -&gt; False) /\<br/>
+&nbsp;&nbsp;(rpo_eq s t -&gt; rpo_eq t s -&gt; s = t).<br/>
+
+<br/>
+<span class="keyword">Axiom</span> <a name="rpo_trans"></a>rpo_trans : forall s t u, rpo t s -&gt; rpo u t -&gt; rpo u s.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+<a name="lab28"></a><h2>Main theorem: when the precedence is well-founded, so is the rpo.</h2 class="section">
+
+</div>
+<code>
+<span class="keyword">Axiom</span> <a name="wf_rpo"></a>wf_rpo : well_founded prec -&gt; well_founded rpo.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+<a name="lab29"></a><h2>RPO is compatible with the instanciation by a substitution.</h2 class="section">
+
+</div>
+<code>
+<span class="keyword">Axiom</span> <a name="rpo_subst"></a>rpo_subst :<br/>
+&nbsp;&nbsp;forall t s, rpo s t -&gt; <br/>
+&nbsp;&nbsp;forall sigma, rpo (apply_subst sigma s) (apply_subst sigma t).<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+<a name="lab30"></a><h2>RPO is compatible with adding context.</h2 class="section">
+
+</div>
+<code>
+<span class="keyword">Axiom</span> <a name="rpo_add_context"></a>rpo_add_context :<br/>
+&nbsp;forall p ctx s t, rpo s t -&gt; is_a_pos ctx p = true -&gt; <br/>
+&nbsp;&nbsp;rpo (replace_at_pos ctx s p) (replace_at_pos ctx t p).<br/>
+
+<br/>
+<span class="keyword">End</span> RPO.<br/>
+
+<br/>
+<span class="keyword">Module</span> <a name="Make"></a>Make (T1: term.Term) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(P1 : Precedence with <span class="keyword">Definition</span> <a name="A"></a>A := T1.symbol)<br/>
+&lt;: RPO. <br/>
+<span class="keyword">Module</span> <a name="T"></a>T := T1.<br/>
+<span class="keyword">Module</span> <a name="P"></a>P := P1.<br/>
+
+<br/>
+<span class="keyword">Import</span> T.<br/>
+<span class="keyword">Import</span> P.<br/>
+
+<br/>
+<span class="keyword">Module</span> <a name="LP"></a>LP := list_permut.Make (Term_eq_dec).<br/>
+<span class="keyword">Import</span> LP.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+<a name="lab31"></a><h2>Definition of size-based well-founded orderings for induction.</h2 class="section">
+
+</div>
+<code>
+<span class="keyword">Definition</span> <a name="o_size"></a>o_size s t := size s &lt; size t.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="wf_size"></a>wf_size :  well_founded o_size.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="size2"></a>size2 s := match s with (s1,s2) =&gt; (size s1, size s2) end.<br/>
+<span class="keyword">Definition</span> <a name="o_size2"></a>o_size2 s t := lex _ _ eq_nat_dec lt lt (size2 s) (size2 t).<br/>
+<span class="keyword">Lemma</span> <a name="wf_size2"></a>wf_size2 : well_founded o_size2.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="size3"></a>size3 s := match s with (s1,s2) =&gt; (size s1, size2 s2) end.<br/>
+<span class="keyword">Definition</span> <a name="o_size3"></a>o_size3 s t := <br/>
+&nbsp;&nbsp;lex _ _ eq_nat_dec lt (lex _ _ eq_nat_dec lt lt) (size3 s) (size3 t).<br/>
+<span class="keyword">Lemma</span> <a name="wf_size3"></a>wf_size3 : well_founded o_size3.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="lex1"></a>lex1 : <br/>
+&nbsp;forall s f l t1 u1 t2 u2, In s l -&gt; o_size3 (s,(t1,u1)) (Term f l,(t2,u2)).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="lex1_bis"></a>lex1_bis : <br/>
+&nbsp;forall a f l t1 u1 t2 u2, o_size3 (Term f l,(t1,u1)) (Term f (a::l),(t2,u2)).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="lex2"></a>lex2 :<br/>
+&nbsp;&nbsp;forall t f l s u1 u2, In t l -&gt; o_size3 (s,(t,u1)) (s,(Term f l, u2)).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="lex3"></a>lex3 :<br/>
+&nbsp;&nbsp;forall u f l s t, In u l -&gt; o_size3 (s,(t,u)) (s,(t,Term f l)).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="o_size3_trans"></a>o_size3_trans : transitive _ o_size3.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+<a name="lab32"></a><h2>Definition of rpo.</h2 class="section">
+
+</div>
+<code>
+
+<br/>
+<span class="keyword">Inductive</span> <a name="rpo"></a>rpo : term -&gt; term -&gt; Prop :=<br/>
+&nbsp;&nbsp;| <a name="Subterm"></a>Subterm : forall f l t s, In s l -&gt; rpo_eq t s -&gt; rpo t (Term f l)<br/>
+&nbsp;&nbsp;| <a name="Top_gt"></a>Top_gt : <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forall f g l l', prec g f -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(forall s', In s' l' -&gt; rpo s' (Term f l)) -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rpo (Term g l') (Term f l)<br/>
+&nbsp;&nbsp;| <a name="Top_eq_lex"></a>Top_eq_lex : <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forall f l l', status f = Lex -&gt; rpo_lex l' l -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(forall s', In s' l' -&gt; rpo s' (Term f l)) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rpo (Term f l') (Term f l)<br/>
+<br/>
+&nbsp;&nbsp;| <a name="Top_eq_mul"></a>Top_eq_mul : <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forall f l l', status f = Mul -&gt; rpo_mul l' l -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rpo (Term f l') (Term f l)<br/>
+<br/>
+with <a name="rpo_eq"></a>rpo_eq : term -&gt; term -&gt; Prop :=<br/>
+&nbsp;&nbsp;| <a name="Eq"></a>Eq : forall t, rpo_eq t t<br/>
+&nbsp;&nbsp;| <a name="Lt"></a>Lt : forall s t, rpo s t -&gt; rpo_eq s t<br/>
+<br/>
+with <a name="rpo_lex"></a>rpo_lex : list term -&gt; list term -&gt; Prop :=<br/>
+&nbsp;&nbsp;| <a name="List_gt"></a>List_gt : <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forall s t l l', rpo s t -&gt; length l = length l' -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rpo_lex (s :: l) (t :: l')<br/>
+&nbsp;&nbsp;| <a name="List_eq"></a>List_eq : forall s l l', rpo_lex l l' -&gt; rpo_lex (s :: l) (s :: l')<br/>
+<br/>
+with <a name="rpo_mul"></a>rpo_mul : list term -&gt; list term -&gt; Prop :=<br/>
+&nbsp;&nbsp;| <a name="List_mul"></a>List_mul : <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forall a lg ls lc l l', <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list_permut l' (ls ++ lc) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list_permut l (a :: lg ++ lc) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(forall b, In b ls -&gt; exists a', In a' (a :: lg) /\ rpo b a') -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rpo_mul l' l.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="rpo_lex_same_length"></a>rpo_lex_same_length :<br/>
+&nbsp;&nbsp;forall l l', rpo_lex l l' -&gt; length l = length l'.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="rpo_subterm"></a>rpo_subterm :<br/>
+&nbsp;forall s t, rpo t s -&gt; forall tj, direct_subterm tj t -&gt; rpo tj s.<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+<a name="lab33"></a><h2>rpo is a preorder, and its reflexive closure is an ordering.</h2 class="section">
+
+</div>
+<code>
+<span class="keyword">Lemma</span> <a name="rpo_closure"></a>rpo_closure :<br/>
+&nbsp;&nbsp;forall s t u, <br/>
+&nbsp;&nbsp;(rpo t s -&gt; rpo u t -&gt; rpo u s) /\<br/>
+&nbsp;&nbsp;(rpo s t -&gt; rpo t s -&gt; False) /\<br/>
+&nbsp;&nbsp;(rpo s s -&gt; False) /\<br/>
+&nbsp;&nbsp;(rpo_eq s t -&gt; rpo_eq t s -&gt; s = t).<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="rpo_trans"></a>rpo_trans : forall s t u, rpo t s -&gt; rpo u t -&gt; rpo u s.<br/>
+
+<br/>
+<span class="keyword">Record</span> <a name="SN_term"></a>SN_term : Set := <br/>
+&nbsp;&nbsp;mk_sn <br/>
+&nbsp;&nbsp;{<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;tt : term; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;sn : Acc rpo tt<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;}.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+<a name="lab34"></a><h2>Well-foundedness of rpo.</h2 class="section">
+
+How to build a built a list of pairs (terms, proof of accessibility) from
+a global of accessibility on the list. 
+</div>
+<code>
+<span class="keyword">Definition</span> <a name="build_list_of_SN_terms"></a>build_list_of_SN_terms :<br/>
+&nbsp;forall l (proof : forall t, In t l -&gt; Acc rpo t), list SN_term.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+Projection on the first element of the pairs after building the
+pairs as above is the identity. 
+</div>
+<code>
+<span class="keyword">Lemma</span> <a name="projection_list_of_SN_terms"></a>projection_list_of_SN_terms :<br/>
+&nbsp;&nbsp;forall l proof, map tt (build_list_of_SN_terms l proof) = l.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="in_sn_sn"></a>in_sn_sn : <br/>
+&nbsp;forall l s, In s (map tt l) -&gt; Acc rpo s.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+Definition of rpo on accessible terms. 
+</div>
+<code>
+<span class="keyword">Definition</span> <a name="rpo_rest"></a>rpo_rest := fun s t =&gt; rpo (tt s) (tt t).<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+Extension of <code>rpo_lex</code> to the accessible terms. 
+</div>
+<code>
+<span class="keyword">Inductive</span> <a name="rpo_lex_rest"></a>rpo_lex_rest : list SN_term -&gt; list SN_term -&gt; Prop :=<br/>
+&nbsp;&nbsp;| <a name="List_gt_rest"></a>List_gt_rest : <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forall s t l l', rpo_rest s t -&gt; length l = length l' -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rpo_lex_rest (s :: l) (t :: l')<br/>
+&nbsp;&nbsp;| <a name="List_eq_rest"></a>List_eq_rest : forall s t l l', tt s = tt t -&gt; rpo_lex_rest l l' -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rpo_lex_rest (s :: l) (t :: l').<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+A triviality: rpo on accessible terms is well-founded. 
+</div>
+<code>
+<span class="keyword">Lemma</span> <a name="wf_on_rest"></a>wf_on_rest : well_founded rpo_rest.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="rpo_lex_rest_same_length"></a>rpo_lex_rest_same_length :<br/>
+&nbsp;&nbsp;forall l l', rpo_lex_rest l l' -&gt; length l = length l'.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+Proof of accessibility does not actually matter, provided at least 
+one exists. 
+</div>
+<code>
+<span class="keyword">Lemma</span> <a name="acc_lex_drop_proof"></a>acc_lex_drop_proof :<br/>
+&nbsp;&nbsp;forall s t l, tt s = tt t -&gt; Acc rpo_lex_rest (s::l) -&gt; Acc rpo_lex_rest (t::l).<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+Lexicographic extension of rpo on accessible terms lists is well-founded. 
+</div>
+<code>
+<span class="keyword">Lemma</span> <a name="wf_on_lex_rest"></a>wf_on_lex_rest : well_founded rpo_lex_rest.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+Extension of <code>rpo_mul</code> to the accessible terms. 
+</div>
+<code>
+<span class="keyword">Inductive</span> <a name="rpo_mul_rest"></a>rpo_mul_rest : list SN_term -&gt; list SN_term -&gt; Prop :=<br/>
+&nbsp;&nbsp;| <a name="List_mul_rest"></a>List_mul_rest : <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forall a lg ls lc l l', <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list_permut (map tt l') (map tt (ls ++ lc)) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list_permut (map tt l) (map tt (a :: lg ++ lc)) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(forall b, In b ls -&gt; exists a', In a' (a :: lg) /\ rpo_rest b a') -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rpo_mul_rest l' l.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+Definition of a finer grain for multiset extension. 
+</div>
+<code>
+<span class="keyword">Inductive</span> <a name="rpo_mul_rest_step"></a>rpo_mul_rest_step : list SN_term -&gt; list SN_term -&gt; Prop :=<br/>
+&nbsp;&nbsp;| <a name="List_mul_rest_step"></a>List_mul_rest_step : <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forall a ls lc l l', <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list_permut (map tt l') (map tt (ls ++ lc)) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list_permut (map tt l) (map tt (a :: lc)) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(forall b, In b ls -&gt; rpo_rest b a) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rpo_mul_rest_step l' l.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+The plain multiset extension is in the transitive closure of
+the finer grain extension. 
+</div>
+<code>
+<span class="keyword">Lemma</span> <a name="rpo_mul_trans_clos"></a>rpo_mul_trans_clos :<br/>
+&nbsp;&nbsp;inclusion _ rpo_mul_rest (clos_trans _ rpo_mul_rest_step).<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+Splitting in two disjoint cases. 
+</div>
+<code>
+<span class="keyword">Lemma</span> <a name="two_cases_rpo"></a>two_cases_rpo :<br/>
+&nbsp;forall a m n, <br/>
+&nbsp;rpo_mul_rest_step n (a :: m) -&gt;<br/>
+&nbsp;(exists n', list_permut (map tt n) (map tt (a :: n')) /\ <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rpo_mul_rest_step n' m) \/<br/>
+&nbsp;(exists k, (forall b, In b k -&gt; rpo_rest b a) /\ <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list_permut (map tt n) (map tt (k ++ m))).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="list_permut_map_acc"></a>list_permut_map_acc :<br/>
+&nbsp;forall l l', list_permut (map tt l) (map tt l') -&gt;<br/>
+&nbsp;Acc rpo_mul_rest_step l -&gt;  Acc rpo_mul_rest_step l'.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+Multiset extension of rpo on accessible terms lists is well-founded. 
+</div>
+<code>
+<span class="keyword">Lemma</span> <a name="wf_on_mul_rest"></a>wf_on_mul_rest : well_founded rpo_mul_rest.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+Another definition of rpo, only on scheme of accessible terms. 
+</div>
+<code>
+<span class="keyword">Definition</span> <a name="rpo_term"></a>rpo_term : relation (symbol * list SN_term) :=<br/>
+&nbsp;fun f_l g_l' =&gt; <br/>
+&nbsp;&nbsp;match f_l with<br/>
+&nbsp;&nbsp;| (f,l) =&gt;<br/>
+&nbsp;&nbsp;match g_l' with<br/>
+&nbsp;&nbsp;| (g,l') =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;if F.eq_symbol_dec f g<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;then<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;match status f with<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| Lex =&gt; rpo_lex_rest l l'<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| Mul =&gt; rpo_mul_rest l l'<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;else prec f g<br/>
+&nbsp;&nbsp;end<br/>
+&nbsp;&nbsp;end.<br/>
+
+<br/>
+<span class="keyword">Lemma</span>  <a name="wf_rpo_term"></a>wf_rpo_term : well_founded prec -&gt; well_founded rpo_term.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="acc_build"></a>acc_build :<br/>
+&nbsp;&nbsp;well_founded prec -&gt; forall f l, <br/>
+&nbsp;&nbsp;Acc rpo (Term f (map (fun sn_tt =&gt; tt sn_tt) l)).<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+<a name="lab35"></a><h2>Main theorem: when the precedence is well-founded, so is the rpo.</h2 class="section">
+
+</div>
+<code>
+<span class="keyword">Lemma</span> <a name="wf_rpo"></a>wf_rpo : well_founded prec -&gt; well_founded rpo.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+<a name="lab36"></a><h2>RPO is compatible with the instanciation by a substitution.</h2 class="section">
+
+</div>
+<code>
+<span class="keyword">Lemma</span> <a name="rpo_subst"></a>rpo_subst :<br/>
+&nbsp;&nbsp;forall t s, rpo s t -&gt; <br/>
+&nbsp;&nbsp;forall sigma, rpo (apply_subst sigma s) (apply_subst sigma t).<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+<a name="lab37"></a><h2>RPO is compatible with adding context.</h2 class="section">
+
+</div>
+<code>
+<span class="keyword">Lemma</span> <a name="rpo_add_context"></a>rpo_add_context :<br/>
+&nbsp;forall p ctx s t, rpo s t -&gt; is_a_pos ctx p = true -&gt; <br/>
+&nbsp;&nbsp;rpo (replace_at_pos ctx s p) (replace_at_pos ctx t p).<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">End</span> Make.<br/>
+
+<br/>
+</code>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/><font size="-1">This page has been generated by <a href="http://coq.inria.fr">coqdoc</a></font>
+</div>
+
+</div>
+
+</body>
+</html>

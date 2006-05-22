@@ -1,0 +1,314 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link href="coqdoc.css" rel="stylesheet" type="text/css"/>
+<title>Ordinals.epsilon0.MSE0</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Ordinals.epsilon0.MSE0</h1>
+
+<code>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Arith.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> ArithRing.<br/>
+
+<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.prelude.More_nat.html">More_nat</a>.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.epsilon0.EPSILON0.html">EPSILON0</a>.<br/>
+
+<br/>
+<span class="keyword">Inductive</span> <a name="nfs"></a>nfs : T1 -&gt; Prop := <br/>
+|<a name="nfs_nil"></a>nfs_nil :  nfs zero<br/>
+|<a name="nfs_cons"></a>nfs_cons :  forall a n b,  nf a -&gt; nfs b -&gt; nfs (cons a n b).<br/>
+
+<br/>
+<span class="keyword">Hint</span> Constructors nfs nf : T1.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="nf_nfs"></a>nf_nfs : forall a, nf a -&gt; nfs a.<br/>
+
+<br/>
+<span class="keyword">Fixpoint</span> <a name="multiplicity"></a>multiplicity (c:T1) (a:T1) {struct a}: nat :=<br/>
+&nbsp;&nbsp;match a with<br/>
+&nbsp;&nbsp;| zero =&gt; 0<br/>
+&nbsp;&nbsp;| (cons a' n' b') =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;match T1_eq_dec c a' with<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| left _ =&gt; ( (S n') +(multiplicity c b'))%nat<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| right _ =&gt; multiplicity c b'<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end<br/>
+&nbsp;&nbsp;end.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="multiplicity_rw1"></a>multiplicity_rw1 : forall a  n b, multiplicity a (cons a n b) = <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(S n + multiplicity a b)%nat.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="multiplicity_rw2"></a>multiplicity_rw2 : forall a  a' n' b', a &lt;&gt; a' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;multiplicity a (cons a' n' b') = multiplicity a b'.<br/>
+
+<br/>
+<span class="keyword">Fixpoint</span> <a name="app"></a>app (o o':T1) {struct o} : T1 :=<br/>
+&nbsp;&nbsp;match o with <a name="zero"></a>zero =&gt; o'<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| cons a n b =&gt; cons a n (app b  o')<br/>
+&nbsp;&nbsp;end.<br/>
+
+<br/>
+<span class="keyword">Infix</span> "::" := app (at level 60, right associativity) : cantor_scope.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="multiplicity_of_app"></a>multiplicity_of_app : forall l l' a, multiplicity a (l ::  l') =<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(multiplicity a l + multiplicity a l')%nat.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="equiv"></a>equiv (l l':T1) := <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;forall o, multiplicity o l = multiplicity o l'.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="equiv_refl"></a>equiv_refl : forall l:T1, equiv l l.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="equiv_sym"></a>equiv_sym : forall l l':T1, equiv l l' -&gt; equiv l' l.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="equiv_trans"></a>equiv_trans :<br/>
+&nbsp;forall l l' l'', equiv l l' -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;equiv l' l'' -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;equiv l l''.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="equiv_cons"></a>equiv_cons :<br/>
+&nbsp;forall a n l l', equiv l l' -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;equiv (cons a n l) (cons a n l').<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="equiv_tail"></a>equiv_tail : forall a n  l l', equiv (cons a n l) (cons a n l') -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;equiv l l'.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="equiv_perm"></a>equiv_perm :<br/>
+&nbsp;forall a n b p l l',<br/>
+&nbsp;&nbsp;&nbsp;equiv l l' -&gt; <br/>
+&nbsp;&nbsp;&nbsp;equiv (cons a n (cons b p l))(cons b p (cons a n l')).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="app_equiv_comm"></a>app_equiv_comm : forall l l', equiv (l :: l') (l' :: l).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="app_equiv_assoc"></a>app_equiv_assoc : forall l l' l'', equiv ((l ::l') :: l'') <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(l :: (l' :: l'')).<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="equiv_cong1"></a>equiv_cong1 : forall l1 l2 l, equiv l1 l2 -&gt; equiv (l1 :: l) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(l2 :: l).<br/>
+
+<br/>
+
+<br/>
+&nbsp;<span class="keyword">Lemma</span> <a name="equiv_cong2"></a>equiv_cong2 : forall l1 l2 l, equiv l1 l2 -&gt; equiv (l :: l1) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(l :: l2).<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Hint</span> Resolve equiv_cons equiv_refl equiv_perm equiv_tail app_equiv_assoc : T1.<br/>
+
+<br/>
+<span class="keyword">Fixpoint</span> <a name="sort_aux"></a>sort_aux (a:T1)(n:nat) (l:T1) {struct l} : T1 :=<br/>
+&nbsp;&nbsp;match l with<br/>
+&nbsp;&nbsp;| zero =&gt; (cons a n zero)<br/>
+&nbsp;|  cons b p l' =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;( match trichotomy_inf a b with<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|  inleft (left _ ) =&gt;  (cons b p (sort_aux a n l'))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| inleft (right _) =&gt; (cons b (S  n +p)%nat  l')<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| inright _ =&gt; (cons a n (cons b p l'))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end)<br/>
+&nbsp;&nbsp;&nbsp;end.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="sort_aux_equiv"></a>sort_aux_equiv : forall l a n, <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;equiv (cons a n l) (sort_aux a n l).<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="sort_aux_nf"></a>sort_aux_nf :<br/>
+&nbsp;forall (l x:T1) n,  nf x -&gt; nf l -&gt; nf (sort_aux x n l).<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Fixpoint</span> <a name="sort"></a>sort (alpha :T1) : T1 :=<br/>
+&nbsp;match alpha with <a name="zero"></a>zero =&gt; zero<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| cons a n b =&gt; sort_aux a n (sort b)<br/>
+&nbsp;end.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="sort_equiv"></a>sort_equiv :<br/>
+&nbsp;&nbsp;forall alpha:T1, equiv alpha (sort alpha).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="sort_nf"></a>sort_nf : forall alpha, nfs alpha -&gt; nf (sort alpha).<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="ltM"></a>ltM (a:T1)(l l':T1) :=<br/>
+&nbsp;(multiplicity a l &lt; multiplicity a l')%nat /\<br/>
+&nbsp;forall b,  a &lt; b -&gt; multiplicity b l = multiplicity b l'.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="ltM_equiv_ltM"></a>ltM_equiv_ltM : forall a l l' l'', ltM a l l' -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;equiv l' l'' -&gt; ltM a l l''.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="ltM_equiv_ltMR"></a>ltM_equiv_ltMR : <br/>
+&nbsp;&nbsp;forall a l l' l'', ltM a l l' -&gt; equiv l l'' -&gt; ltM a l'' l'.<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="ltM_trans"></a>ltM_trans : forall a l l' , ltM a l l' -&gt; forall l'', ltM a l' l'' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ltM a l l''.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="ltM_trans_1"></a>ltM_trans_1 : forall a b l l' l'', a &lt; b -&gt; ltM a l l' -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ltM b l' l'' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ltM b l l''.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="ltM_trans_2"></a>ltM_trans_2 : forall a b l l' l'',  b &lt;  a -&gt; ltM a l l' -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ltM b l' l'' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ltM a l l''.<br/>
+
+<br/>
+&nbsp;<span class="keyword">Lemma</span> <a name="lt_ltM"></a>lt_ltM : forall a n b l l',  b &lt; a -&gt; ltM a l l' -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ltM a (cons b n l) l'.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="nf_multiplicity_head"></a>nf_multiplicity_head : forall l c n , nf (cons c n l) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;multiplicity c (cons c n l) = S n.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="nf_multiplicity_tail"></a>nf_multiplicity_tail : forall l a c n , <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a &lt; c -&gt; nf (cons c n l) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;multiplicity a (cons c n l) = multiplicity a l.<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span>  <a name="nf_multiplicity_big"></a>nf_multiplicity_big : forall l a c n , c &lt; a -&gt; nf (cons c n l) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;multiplicity a (cons c n l) = 0.<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="ltM_inv"></a>ltM_inv : forall a b n l l', <br/>
+&nbsp;&nbsp;nf (cons b n l) -&gt;  nf  (cons b n l') -&gt;<br/>
+&nbsp;&nbsp;ltM a (cons b n l) (cons b n l') -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ltM a l l'.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="ltM_inv2"></a>ltM_inv2 : forall l l' a b n b' n',  nf (cons b n l) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf (cons b' n' l') -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ltM  a (cons b n l) (cons b' n' l') -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a &lt;= b'.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="ltM_inv3"></a>ltM_inv3: forall l l' a b n b' n',  a &lt; b' -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf (cons b n l) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf (cons b' n' l') -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ltM  a (cons b n l) (cons b' n' l') -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b = b' /\ n = n'.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="ltM_cons"></a>ltM_cons : forall a l l' b n, ltM a l l' -&gt; ltM a (cons b n l)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(cons b n l').<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="ltM_app"></a>ltM_app : forall a l l' l'', ltM a l l' -&gt; ltM a (l'' :: l)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(l'' :: l').<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="ltM_appR"></a>ltM_appR : forall a l l' l'', ltM a l l' -&gt; ltM a (app l l'')<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(app l' l'').<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="lt_ltM2"></a>lt_ltM2 : forall c c', nf c -&gt; nf c' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;c &lt; c' -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{a:T1| ltM a c c'}.<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="ltM_lt"></a>ltM_lt : forall a l l', nf l -&gt; nf l' -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ltM a l l' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l &lt; l'.<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="ltM_tail"></a>ltM_tail : forall a n l,  ltM a l (cons a n  l).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="ltM_head"></a>ltM_head : forall a n a' p l , a' &lt; a -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ltM a (cons a' p l)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(cons a n l).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="nfs_to_nf"></a>nfs_to_nf : forall l a, nfs l -&gt; (0 &lt; multiplicity a l)%nat -&gt; nf a.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="nf_to_nfs"></a>nf_to_nfs : forall l, nf l -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nfs l.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="nf_unicity"></a>nf_unicity :forall l, nf l -&gt; forall l',equiv l l' -&gt; nf l' -&gt; l=l'.<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+</code>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/><font size="-1">This page has been generated by <a href="http://coq.inria.fr">coqdoc</a></font>
+</div>
+
+</div>
+
+</body>
+</html>

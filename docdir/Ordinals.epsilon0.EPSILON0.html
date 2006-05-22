@@ -1,0 +1,1057 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link href="coqdoc.css" rel="stylesheet" type="text/css"/>
+<title>Ordinals.epsilon0.EPSILON0</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Ordinals.epsilon0.EPSILON0</h1>
+
+<code>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Arith.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Omega. <br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Compare_dec.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Relations.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Wellfounded.<br/>
+
+<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.prelude.Tools.html">Tools</a>.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.prelude.More_nat.html">More_nat</a>.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Wf_nat.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.prelude.AccP.html">AccP</a>.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.prelude.not_decreasing.html">not_decreasing</a>.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> ArithRing.<br/>
+
+<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.rpo.term.html">term</a>.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.rpo.rpo.html">rpo</a>.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> List.<br/>
+
+<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+cons a n b represents  omega^a *(S n)  + b 
+</div>
+<code>
+
+<br/>
+<span class="keyword">Inductive</span> <a name="T1"></a>T1 : Set :=<br/>
+&nbsp;&nbsp;<a name="zero"></a>zero : T1<br/>
+| <a name="cons"></a>cons : T1 -&gt; nat -&gt; T1 -&gt; T1.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+some abreviations 
+</div>
+<code>
+</code>
+
+<div class="doc">
+omega^x * (S k) 
+</div>
+<code>
+
+<br/>
+<span class="keyword">Definition</span> <a name="omega_term"></a>omega_term (a:T1)(k:nat) :=<br/>
+&nbsp;&nbsp;&nbsp;cons a k zero.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="phi0"></a>phi0 a := cons a 0 zero.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="finite"></a>finite (n:nat) : T1 :=<br/>
+&nbsp;match n with  0 =&gt; zero<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| S p =&gt; cons zero p zero<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end.<br/>
+
+<br/>
+<span class="keyword">Notation</span> "'F' n" := (finite n)(at level 29) : cantor_scope.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="omega"></a>omega := cons (cons zero 0 zero) 0 zero.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="log"></a>log a := match a with<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| zero =&gt; zero<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| cons a _ _ =&gt; a<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end.<br/>
+
+<br/>
+<span class="keyword">Fixpoint</span> <a name="omega_tower"></a>omega_tower (n:nat) : T1 :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;match n with 0 =&gt; finite 1<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| S p =&gt; cons (omega_tower p) 0 zero<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end.<br/>
+
+<br/>
+<span class="keyword">Inductive</span> <a name="lt"></a>lt : T1 -&gt; T1 -&gt; Prop :=<br/>
+|  <a name="zero_lt"></a>zero_lt : forall a n b, lt zero  (cons a n b)<br/>
+|  <a name="head_lt"></a>head_lt :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;forall a a' n n' b b', lt a  a' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lt (cons a n b) (cons a' n' b')<br/>
+|  <a name="coeff_lt"></a>coeff_lt : forall a n n' b b', (n &lt; n')%nat -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lt (cons a n b) (cons a n' b')<br/>
+|  <a name="tail_lt"></a>tail_lt : forall a n b b', lt b b' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lt (cons a n b) (cons a n b')<br/>
+where  "o &lt; o'" := (lt o o') : cantor_scope.<br/>
+
+<br/>
+<span class="keyword">Hint</span> Resolve zero_lt head_lt coeff_lt tail_lt : T1.<br/>
+
+<br/>
+Open Scope cantor_scope.<br/>
+Delimit Scope cantor_scope with ca.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="le"></a>le (alpha beta :T1) := alpha = beta \/ alpha &lt; beta.<br/>
+<span class="keyword">Notation</span> "alpha &lt;= beta" := (le alpha beta) : cantor_scope.<br/>
+
+<br/>
+<span class="keyword">Hint</span> Unfold le : T1.<br/>
+
+<br/>
+<span class="keyword">Inductive</span> <a name="ap"></a>ap : T1 -&gt; Prop:=<br/>
+&nbsp;<a name="ap_intro"></a>ap_intro : forall a,  ap (cons a 0 zero).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="ap_phi0"></a>ap_phi0 : forall a, ap (phi0 a).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="ap_phi0R"></a>ap_phi0R : forall a, ap a -&gt;{b : T1 | a = phi0 b}.<br/>
+
+<br/>
+<span class="keyword">Fixpoint</span> <a name="compare"></a>compare (c c':T1){struct c'}:comparison :=<br/>
+&nbsp;&nbsp;match c,c' with<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a name="zero"></a>zero, zero =&gt; Eq<br/>
+&nbsp;&nbsp;| zero, cons a' n' b' =&gt; Lt<br/>
+&nbsp;&nbsp;| _   , zero =&gt; Gt<br/>
+&nbsp;&nbsp;| (cons a n b),(cons a' n' b') =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(match compare a a' with<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| Lt =&gt; Lt<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| Gt =&gt; Gt<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| Eq =&gt; (match lt_eq_lt_dec n n' with<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="inleft"></a>inleft  (left _) =&gt; Lt<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| inright _ =&gt; Gt<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|   _ =&gt; compare b b'<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end)<br/>
+&nbsp;end.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="max"></a>max a b := match compare a b with Lt =&gt; b | _ =&gt; a end.<br/>
+
+<br/>
+<span class="keyword">Theorem</span> <a name="not_lt_zero"></a>not_lt_zero : forall a, ~ a &lt; zero.<br/>
+
+<br/>
+<span class="keyword">Hint</span> Resolve not_lt_zero : T1.<br/>
+
+<br/>
+<span class="keyword">Theorem</span> <a name="lt_inv"></a>lt_inv : forall a n b a' n' b',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons a n b &lt;  cons a' n' b' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a &lt; a' \/<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a = a' /\ (n &lt; n')%nat \/<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a = a' /\ n = n' /\ b &lt; b'.<br/>
+
+<br/>
+<span class="keyword">Theorem</span> <a name="lt_irr"></a>lt_irr : forall a, ~ a &lt; a.<br/>
+<span class="keyword">Hint</span> Resolve lt_irr : T1.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="lt_inv_nb"></a>lt_inv_nb : forall a n n' b b',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons a n b &lt;  cons a n' b' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(n&lt;n')%nat \/  n=n' /\ b &lt; b'.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="lt_inv_b"></a>lt_inv_b : forall a n b b',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons a n b &lt;  cons a n b' -&gt; b &lt; b'.<br/>
+
+<br/>
+<span class="keyword">Theorem</span> <a name="lt_trans"></a>lt_trans : forall a b, a &lt; b -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forall c, b &lt; c -&gt; a &lt; c.<br/>
+
+<br/>
+<span class="keyword">Theorem</span> <a name="lt_not_gt"></a>lt_not_gt : forall a b, a &lt; b  -&gt; ~ b &lt; a.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="finite_lt"></a>finite_lt : forall n p : nat, (n &lt; p)%nat -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;F n &lt; F p.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="finite_ltR"></a>finite_ltR : forall n p : nat,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;F n &lt; F p  -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(n &lt; p)%nat.<br/>
+
+<br/>
+<span class="keyword">Inductive</span> <a name="nf"></a>nf : T1 -&gt; Prop :=<br/>
+| <a name="zero_nf"></a>zero_nf : nf zero<br/>
+| <a name="single_nf"></a>single_nf : forall a n, nf a -&gt;  nf (cons a n zero)<br/>
+| <a name="cons_nf"></a>cons_nf : forall a n a' n' b, a' &lt; a -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf a -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf(cons a' n' b)-&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf(cons a n (cons a' n' b)).<br/>
+<span class="keyword">Hint</span> Resolve zero_nf single_nf cons_nf : T1.<br/>
+
+<br/>
+<span class="keyword">Inductive</span> <a name="nf2"></a>nf2 : T1 -&gt; T1 -&gt; Prop :=<br/>
+| <a name="nf2_z"></a>nf2_z : forall a, nf2 zero a<br/>
+| <a name="nf2_c"></a>nf2_c : forall a a' n' b', a' &lt; a -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf2 (cons a' n' b') a.<br/>
+
+<br/>
+<span class="keyword">Hint</span> Resolve nf2_z nf2_c : T1.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="nf_inv1"></a>nf_inv1 : forall a n b, nf (cons a n b) -&gt; nf a.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="nf_inv2"></a>nf_inv2 : forall a n b, nf (cons a n b) -&gt; nf b.<br/>
+
+<br/>
+<span class="keyword">Hint</span> Resolve nf_inv1 nf_inv2 : T1.<br/>
+
+<br/>
+<span class="keyword">Ltac</span> nf_inv := (eapply nf_inv1; progress eauto)||<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(eapply nf_inv2; progress eauto).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="nf_tail_lt_nf"></a>nf_tail_lt_nf : forall  b b', b' &lt; b -&gt; nf b' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forall a n,   nf (cons a n b) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf (cons a n b').<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="tail_lt_cons"></a>tail_lt_cons : forall b n a,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf (cons a n b)-&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b &lt; cons a n b.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="nf_intro"></a>nf_intro : forall a n b, nf a -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf b -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf2 b a -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf (cons a n b).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="nf2_intro"></a>nf2_intro : forall a n b, nf (cons a n b) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf2 b a.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="nf2_phi0"></a>nf2_phi0 : forall a b, nf2 b a -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b &lt; phi0 a.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="nf2_phi0R"></a>nf2_phi0R : forall a b, b &lt; phi0 a -&gt; nf2 b a.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="nf_coeff_irrelevance"></a>nf_coeff_irrelevance : forall a b n p, nf (cons a n b) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf (cons a p b).<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="log_nf"></a>log_nf : forall a, nf a -&gt; nf (log a).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="nf_of_finite"></a>nf_of_finite : forall  n b, nf (cons zero n b) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b = zero.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="ordinal_finite"></a>ordinal_finite : forall n, nf (F n).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="nf_omega"></a>nf_omega : nf omega.<br/>
+
+<br/>
+<span class="keyword">Theorem</span> <a name="nf_phi0"></a>nf_phi0 : forall a, nf a -&gt; nf (phi0 a).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="nf_tower"></a>nf_tower : forall n, nf (omega_tower n).<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="nf_rect"></a>nf_rect : forall P : T1 -&gt; Type,<br/>
+&nbsp;&nbsp;&nbsp;P zero -&gt;<br/>
+&nbsp;&nbsp;&nbsp;(forall n: nat,  P (cons zero n zero)) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;(forall a n b n' b', nf (cons a n b) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;P (cons a n b)-&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf2 b' (cons a n b) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf b' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;P b' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;P (cons (cons a n b) n' b')) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;forall a, nf a -&gt; P a.<br/>
+
+<br/>
+<span class="keyword">Section</span> lt_not_well_founded.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="keyword">Let</span> f := (fix f (i:nat): T1 :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;match i with 0 =&gt; (phi0 (F 2))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| S i =&gt; cons (F 1)  0 (f  i)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end).<br/>
+
+<br/>
+&nbsp;<span class="keyword">Lemma</span> <a name="f_not_in_normal_form"></a>f_not_in_normal_form :<br/>
+&nbsp;&nbsp;forall i, ~ (nf (f (S i))).<br/>
+
+<br/>
+&nbsp;<span class="keyword">Lemma</span>  <a name="f_decreases"></a>f_decreases : forall i, f (S i) &lt;  f i.<br/>
+
+<br/>
+&nbsp;<span class="keyword">Theorem</span> <a name="lt_not_wf"></a>lt_not_wf : ~ (well_founded lt).<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">End</span> lt_not_well_founded.<br/>
+
+<br/>
+<span class="keyword">Theorem</span> <a name="zero_le"></a>zero_le : forall a, zero &lt;= a.<br/>
+
+<br/>
+<span class="keyword">Theorem</span> <a name="le_trans"></a>le_trans : forall a b c, a &lt;= b -&gt; b &lt;= c -&gt; a &lt;= c.<br/>
+
+<br/>
+<span class="keyword">Theorem</span> <a name="le_lt_trans"></a>le_lt_trans : forall a b c, a &lt;= b -&gt; b &lt; c -&gt; a &lt; c.<br/>
+
+<br/>
+<span class="keyword">Theorem</span> <a name="lt_le_trans"></a>lt_le_trans : forall a b c, a &lt; b -&gt; b &lt;= c -&gt; a &lt; c.<br/>
+
+<br/>
+<span class="keyword">Theorem</span> <a name="le_inv"></a>le_inv : forall a n b a' n' b',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons a n b &lt;= cons a' n' b' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a &lt; a' \/<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a = a' /\ (n &lt; n')%nat \/<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a = a' /\ n = n' /\ b &lt;= b'.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="lt_not_le"></a>lt_not_le: forall a b,  a &lt; b -&gt; ~  b &lt;= a.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="lt_inv_le"></a>lt_inv_le : forall a n b a' n' b',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons a n b &lt; cons a' n' b' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a &lt;= a'.<br/>
+
+<br/>
+<span class="keyword">Theorem</span> <a name="le_zero_inv"></a>le_zero_inv : forall a, a &lt;= zero -&gt; a = zero.<br/>
+
+<br/>
+<span class="keyword">Theorem</span> <a name="le_tail"></a>le_tail : forall a n b b', b &lt;= b' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons a n b &lt;= cons a n b'.<br/>
+
+<br/>
+<span class="keyword">Hint</span> Resolve zero_le le_tail : T1.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="head_lt_cons"></a>head_lt_cons : forall a n b, a &lt; cons a n b.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="T1_eq_dec"></a>T1_eq_dec : forall (a b : T1), {a = b}+{a &lt;&gt; b}.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="trichotomy_inf"></a>trichotomy_inf : forall a b, {a &lt; b}+{a = b}+{b &lt; a}.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="max'"></a>max' a b :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;if trichotomy_inf a b <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;then b else a.<br/>
+<span class="keyword">Goal</span> forall a b, a &lt; b -&gt; max' a b = b.<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="lt_le_dec"></a>lt_le_dec : forall a b, {a &lt; b}+{b &lt;= a}.<br/>
+
+<br/>
+<span class="keyword">Module</span>  <a name="Eps0_sig"></a>Eps0_sig &lt;: Signature.<br/>
+
+<br/>
+<span class="keyword">Inductive</span> <a name="symb0"></a>symb0 : Set := <a name="nat_0"></a>nat_0 | <a name="nat_S"></a>nat_S | <a name="ord_zero"></a>ord_zero | <a name="ord_cons"></a>ord_cons.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="symb"></a>symb := symb0.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="eq_symbol_dec"></a>eq_symbol_dec : forall f1 f2 : symb, {f1 = f2} + {f1 &lt;&gt; f2}.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+The arity of a symbol contains also the information about built-in theories as in CiME 
+</div>
+<code>
+<span class="keyword">Inductive</span> <a name="arity_type"></a>arity_type : Set :=<br/>
+&nbsp;&nbsp;| <a name="AC"></a>AC : arity_type<br/>
+&nbsp;&nbsp;| <a name="C"></a>C : arity_type<br/>
+&nbsp;&nbsp;| <a name="Free"></a>Free : nat -&gt; arity_type.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="arity"></a>arity : symb -&gt; arity_type :=<br/>
+&nbsp;&nbsp;fun f =&gt; match f with<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| nat_0 =&gt; Free 0<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| ord_zero =&gt; Free 0<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| nat_S =&gt; Free 1<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| ord_cons =&gt; Free 3<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end.<br/>
+
+<br/>
+<span class="keyword">End</span> Eps0_sig.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+<a name="lab55"></a><h1>Module Type Variables.</h1 class="section">
+
+ There are almost no assumptions, except a decidable equality. 
+</div>
+<code>
+<span class="keyword">Module</span> <a name="Vars"></a>Vars &lt;: <span class="keyword">Variables</span>.<br/>
+
+<br/>
+<span class="keyword">Inductive</span> <a name="empty_set"></a>empty_set : Set := .<br/>
+<span class="keyword">Definition</span> var := <a name="empty_set"></a>empty_set.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="eq_variable_dec"></a>eq_variable_dec : forall v1 v2 : var, {v1 = v2} + {v1 &lt;&gt; v2}.<br/>
+
+<br/>
+<span class="keyword">End</span> Vars.<br/>
+
+<br/>
+<span class="keyword">Module</span>  <a name="Eps0_prec"></a>Eps0_prec &lt;: Precedence.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="A"></a>A : Set := Eps0_sig.symb.<br/>
+<span class="keyword">Import</span> Eps0_sig.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="prec"></a>prec : relation A :=<br/>
+&nbsp;&nbsp;&nbsp;fun f g =&gt; match f, g with<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| nat_0, nat_S =&gt; True<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| nat_0, ord_zero =&gt; True<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| nat_0, ord_cons =&gt; True<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| ord_zero, nat_S =&gt; True<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| ord_zero, ord_cons =&gt; True<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| nat_S, ord_cons =&gt; True<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| _, _ =&gt; False<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end.<br/>
+
+<br/>
+<span class="keyword">Inductive</span> <a name="status_type"></a>status_type : Set :=<br/>
+&nbsp;&nbsp;| <a name="Lex"></a>Lex : status_type<br/>
+&nbsp;&nbsp;| <a name="Mul"></a>Mul : status_type.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="status"></a>status : A -&gt; status_type := fun f =&gt; Lex.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="prec_dec"></a>prec_dec : forall a1 a2 : A, {prec a1 a2} + {~ prec a1 a2}.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="prec_antisym"></a>prec_antisym : forall s, prec s s -&gt; False.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="prec_transitive"></a>prec_transitive : transitive A prec.<br/>
+
+<br/>
+<span class="keyword">End</span> Eps0_prec.<br/>
+
+<br/>
+<span class="keyword">Module</span> <a name="Eps0_alg"></a>Eps0_alg &lt;: Term := term.Make (Eps0_sig) (Vars).<br/>
+<span class="keyword">Module</span> <a name="Eps0_rpo"></a>Eps0_rpo &lt;: RPO := rpo.Make (Eps0_alg) (Eps0_prec).<br/>
+
+<br/>
+<span class="keyword">Import</span> Eps0_alg.<br/>
+<span class="keyword">Import</span> Eps0_rpo.<br/>
+<span class="keyword">Import</span> Eps0_sig.<br/>
+
+<br/>
+<span class="keyword">Fixpoint</span> <a name="nat_2_term"></a>nat_2_term (n:nat) : term :=<br/>
+&nbsp;&nbsp;match n with 0 =&gt; (Term nat_0 nil)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| S p =&gt; Term nat_S ((nat_2_term p)::nil)<br/>
+&nbsp;&nbsp;end.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+<a name="lab56"></a><h1>Every (representation of a) natural number is less than</h1 class="section">
+
+ a non zero ordinal 
+</div>
+<code>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="nat_lt_cons"></a>nat_lt_cons : forall (n:nat) a p  b , rpo (nat_2_term n) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Term ord_cons (a::p::b::nil)).<br/>
+
+<br/>
+<span class="keyword">Theorem</span> <a name="rpo_trans"></a>rpo_trans : forall t t1 t2, rpo t t1 -&gt; rpo t1 t2 -&gt; rpo t t2.<br/>
+
+<br/>
+<span class="keyword">Fixpoint</span> <a name="T1_2_term"></a>T1_2_term (a:T1) : term := <br/>
+match a with<br/>
+&nbsp;<a name="zero"></a>zero =&gt; Term ord_zero nil<br/>
+|cons a n b =&gt; Term ord_cons (T1_2_term a :: nat_2_term n ::T1_2_term b::nil)<br/>
+end.<br/>
+
+<br/>
+<span class="keyword">Fixpoint</span> <a name="T1_size"></a>T1_size (o:T1):nat :=<br/>
+&nbsp;match o with <a name="zero"></a>zero =&gt; 0<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| cons a n b =&gt; S (T1_size a + n + T1_size b)%nat<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="T1_size1"></a>T1_size1 : forall a n b, (T1_size zero &lt; T1_size (cons a n b))%nat.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="T1_size2"></a>T1_size2 : forall a n b , (T1_size a &lt; T1_size (cons a n b))%nat.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="T1_size3"></a>T1_size3 : forall a n b , (T1_size b &lt; T1_size (cons a n b))%nat.<br/>
+
+<br/>
+<span class="keyword">Hint</span> Resolve T1_size2 T1_size3.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+let us recall subterm properties on T1 
+</div>
+<code>
+<span class="keyword">Lemma</span> <a name="lt_subterm1"></a>lt_subterm1 : forall a a'  n'  b', a &lt; a' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a &lt; cons a' n' b'.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="lt_subterm2"></a>lt_subterm2 : forall a a' n n' b b', a &lt; a' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf (cons a n  b) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf (cons a' n' b') -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b &lt; cons a' n' b'.<br/>
+
+<br/>
+<span class="keyword">Hint</span> Resolve nat_lt_cons.<br/>
+<span class="keyword">Hint</span> Resolve lt_subterm2 lt_subterm1.<br/>
+<span class="keyword">Hint</span> Resolve T1_size3 T1_size2 T1_size1.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="nat_2_term_mono"></a>nat_2_term_mono : forall n n', (n &lt; n')%nat -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rpo (nat_2_term n) (nat_2_term n').<br/>
+
+<br/>
+<span class="keyword">Theorem</span> <a name="lt_inc_rpo_0"></a>lt_inc_rpo_0 : forall n, <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forall o' o, (T1_size o + T1_size o' &lt;= n)%nat-&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;o &lt; o' -&gt; nf o -&gt; nf o' -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rpo (T1_2_term o) (T1_2_term o').<br/>
+
+<br/>
+<span class="keyword">Remark</span> R1 : Acc P.prec nat_0.<br/>
+
+<br/>
+<span class="keyword">Hint</span> Resolve R1.<br/>
+
+<br/>
+<span class="keyword">Remark</span> R2 : Acc P.prec ord_zero.<br/>
+
+<br/>
+<span class="keyword">Hint</span> Resolve R2.<br/>
+
+<br/>
+<span class="keyword">Remark</span> R3 : Acc P.prec nat_S.<br/>
+
+<br/>
+<span class="keyword">Hint</span> Resolve R3.<br/>
+
+<br/>
+<span class="keyword">Remark</span> R4 : Acc P.prec ord_cons.<br/>
+
+<br/>
+<span class="keyword">Hint</span> Resolve R4.<br/>
+
+<br/>
+<span class="keyword">Theorem</span> <a name="well_founded_rpo"></a>well_founded_rpo : well_founded rpo.<br/>
+
+<br/>
+<span class="keyword">Section</span>  well_founded.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="keyword">Let</span> R := restrict T1 nf lt.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="keyword">Hint</span> Unfold restrict R.<br/>
+
+<br/>
+&nbsp;<span class="keyword">Lemma</span> <a name="R_inc_rpo"></a>R_inc_rpo : forall o o', R o o' -&gt; rpo (T1_2_term o) (T1_2_term o').<br/>
+
+<br/>
+
+<br/>
+&nbsp;<span class="keyword">Lemma</span> <a name="nf_Wf"></a>nf_Wf : well_founded_P _ nf lt.<br/>
+
+<br/>
+<span class="keyword">End</span> well_founded.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="transfinite_induction"></a>transfinite_induction :<br/>
+&nbsp;forall (P:T1 -&gt; Type),<br/>
+&nbsp;&nbsp;&nbsp;(forall x:T1, nf x -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(forall y:T1, nf y -&gt;  y &lt; x -&gt; P y) -&gt; P x) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;forall a, nf a -&gt; P a.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="transfinite_induction_Q"></a>transfinite_induction_Q :<br/>
+&nbsp;&nbsp;forall (P : T1 -&gt; Type) (Q : T1 -&gt; Prop),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(forall x:T1, Q x -&gt; nf x -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(forall y:T1, Q y -&gt; nf y -&gt;  y &lt; x -&gt; P y) -&gt; P x) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;forall a, nf a -&gt; Q a -&gt; P a.<br/>
+
+<br/>
+<span class="keyword">Fixpoint</span> <a name="succ"></a>succ (c:T1) : T1 :=<br/>
+&nbsp;&nbsp;match c with <a name="zero"></a>zero =&gt; finite 1<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| cons zero n _ =&gt; cons zero (S n) zero<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| cons a n b =&gt; cons a n (succ b)<br/>
+&nbsp;&nbsp;end.<br/>
+
+<br/>
+<span class="keyword">Fixpoint</span> <a name="pred"></a>pred (c:T1) : option T1 :=<br/>
+&nbsp;&nbsp;match c with <a name="zero"></a>zero =&gt; None<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| cons zero 0 _ =&gt; Some zero<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| cons zero (S n) _ =&gt; Some (cons zero n zero)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| cons a n b =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;match (pred b) with <a name="None"></a>None =&gt; None<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| Some c =&gt; Some (cons a n c)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end<br/>
+&nbsp;&nbsp;end.<br/>
+
+<br/>
+<span class="keyword">Fixpoint</span> <a name="plus"></a>plus (c1 c2 : T1) {struct c1}:T1 :=<br/>
+&nbsp;&nbsp;match c1,c2 with<br/>
+&nbsp;|  zero, y  =&gt; y<br/>
+&nbsp;|  cons zero n _, zero =&gt; cons zero n zero<br/>
+&nbsp;|  x, zero  =&gt; x<br/>
+&nbsp;|  cons zero n _, cons zero n' _ =&gt; cons zero (S (n+n')) zero<br/>
+&nbsp;|  cons a n b, cons a' n' b' =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(match compare a a' with<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| Datatypes.Lt =&gt; cons a' n' b'<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| Gt =&gt; (cons a n (plus b (cons a' n' b')))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| Datatypes.Eq  =&gt; (cons a (S(n+n')) b')<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end)<br/>
+&nbsp;end<br/>
+&nbsp;where "a + b" := (plus a b) : cantor_scope.<br/>
+
+<br/>
+<span class="keyword">Fixpoint</span> <a name="minus"></a>minus (c1 c2 : T1) {struct c1}:T1 :=<br/>
+&nbsp;&nbsp;match c1,c2 with<br/>
+&nbsp;|  zero, y  =&gt; zero<br/>
+&nbsp;|  cons zero n _, cons zero n' _ =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (le_lt_dec n n')<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;then zero<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else  cons zero (Peano.pred (n-n')) zero<br/>
+&nbsp;|  cons zero n _, zero =&gt;  cons zero n zero<br/>
+&nbsp;|  cons zero n _, y =&gt;  zero<br/>
+&nbsp;|  cons a n b, zero =&gt;  cons a n b<br/>
+&nbsp;|  cons a n b, cons a' n' b' =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(match compare a a' with<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| Datatypes.Lt =&gt; zero<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| Gt =&gt; cons a n b<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|  Datatypes.Eq  =&gt; (match (lt_eq_lt_dec n n') with<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| inleft (left _) =&gt; zero<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| inright _ =&gt; (cons a (Peano.pred (n-n')) b')<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| _ =&gt;  b - b'<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end)<br/>
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end)<br/>
+&nbsp;end<br/>
+&nbsp;where  "c1 - c2" := (minus c1 c2):cantor_scope.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="omega_minus_one"></a>omega_minus_one : omega - F 1 = omega.<br/>
+
+<br/>
+<span class="keyword">Fixpoint</span> <a name="mult"></a>mult (c1 c2 : T1) {struct c2}:T1 :=<br/>
+&nbsp;&nbsp;match c1,c2 with<br/>
+&nbsp;|  zero, y  =&gt; zero<br/>
+&nbsp;|  x, zero =&gt; zero<br/>
+&nbsp;|  cons zero n _, cons zero n' _ =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons zero (Peano.pred((S n) * (S n'))) zero<br/>
+&nbsp;|  cons a n b, cons zero n' b' =&gt;  <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons a (Peano.pred((S n) * (S n'))) b<br/>
+&nbsp;|  cons a n b, cons a' n' b' =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons (a + a') n' ((cons a n b) * b')<br/>
+&nbsp;end<br/>
+where  "c1 * c2" := (mult c1 c2) : cantor_scope.<br/>
+
+<br/>
+<span class="keyword">Fixpoint</span> <a name="exp_F"></a>exp_F (a:T1)(n:nat){struct n}:T1 :=<br/>
+&nbsp;match n with<br/>
+&nbsp;| 0 =&gt; F 1<br/>
+&nbsp;| S p =&gt; a * (exp_F a p)<br/>
+&nbsp;end.<br/>
+
+<br/>
+<span class="keyword">Fixpoint</span> <a name="exp"></a>exp  (a b : T1) {struct b}:T1 :=<br/>
+&nbsp;&nbsp;match a,b with<br/>
+&nbsp;|  x, zero =&gt; cons zero 0 zero<br/>
+&nbsp;| cons zero 0 _ , _ =&gt; cons zero 0 zero<br/>
+&nbsp;| zero, y            =&gt; zero<br/>
+&nbsp;| x , cons zero n' _ =&gt;  exp_F x (S n')<br/>
+&nbsp;| cons zero n _, cons  (cons zero 0 zero) n'  b' =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;((cons (cons zero n' zero) 0 zero) *<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;((cons zero n zero) ^  b'))<br/>
+&nbsp;| cons zero n _, cons  a' n' b' =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(omega_term<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(omega_term (a' - (F 1)) n')<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0) *<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;((cons zero n zero) ^ b')<br/>
+&nbsp;| cons a  n b, cons  a' n' b' =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;((omega_term   (a * (cons a' n' zero))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0) *<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;((cons a n b) ^ b'))<br/>
+end<br/>
+where "a ^ b" := (exp a b) : cantor_scope.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="get_decomposition"></a>get_decomposition : forall c, lt zero c -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{a:T1 &amp; {n:nat &amp; {b:T1 | c = cons a n b}}}.<br/>
+
+<br/>
+<span class="keyword">Ltac</span> decomp_exhib H a n b e:=<br/>
+&nbsp;let Ha := fresh in<br/>
+&nbsp;let Hn := fresh in<br/>
+&nbsp;let Hb := fresh in<br/>
+&nbsp;&nbsp;match type of H<br/>
+&nbsp;&nbsp;with lt zero ?c =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;case (get_decomposition  H);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;intros a Ha;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case Ha;intros n Hn; case Hn; intros b e;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;clear Ha Hn<br/>
+&nbsp;&nbsp;end.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="lt_a_phi0_a"></a>lt_a_phi0_a : forall a, a &lt; phi0 a.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="phi0_lt"></a>phi0_lt : forall a b, a &lt; b -&gt; phi0 a &lt; phi0 b.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="phi0_ltR"></a>phi0_ltR : forall a b, phi0 a &lt; phi0 b -&gt;  a &lt; b.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="compare_ok_1"></a>compare_ok_1:<br/>
+&nbsp;&nbsp;&nbsp;forall a a', (compare a a' =  Datatypes.Lt &lt;-&gt; a &lt; a') /\<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(compare a a' =  Datatypes.Eq &lt;-&gt; a = a') .<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="compare_reflect"></a>compare_reflect : forall a a', match compare a a' with<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|    Datatypes.Lt =&gt; a &lt; a'<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|    Datatypes.Eq =&gt; a = a'<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|    Datatypes.Gt =&gt; a' &lt; a<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="compare_rw1"></a>compare_rw1 : forall a b, a &lt; b -&gt; compare a b =  Datatypes.Lt.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="compare_rw2"></a>compare_rw2 : forall a, compare a a =  Datatypes.Eq.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="compare_rw3"></a>compare_rw3 : forall a b, b &lt; a  -&gt; compare a b = Gt.<br/>
+
+<br/>
+<span class="keyword">Theorem</span> <a name="compare_reflectR"></a>compare_reflectR : forall a b : T1,<br/>
+&nbsp;&nbsp;(match trichotomy_inf a b with<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;inleft  (left _) =&gt;  Datatypes.Lt<br/>
+&nbsp;&nbsp;| inleft  (right _) =&gt;  Datatypes.Eq<br/>
+&nbsp;&nbsp;| inright _ =&gt; Gt<br/>
+&nbsp;&nbsp;end)<br/>
+&nbsp;&nbsp;= compare a b.<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="max_le_1"></a>max_le_1 : forall a b, a &lt;= max a b.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="max_comm"></a>max_comm : forall a b, max a b = max b a.<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="lt_intro"></a>lt_intro : forall a b, compare a b =  Datatypes.Lt -&gt; a &lt; b.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="max_dec"></a>max_dec : forall a b, {max a b = a}+{max a b = b}.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="max_nf"></a>max_nf : forall a b, nf a -&gt; nf b -&gt; nf (max a b).<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="max_assoc"></a>max_assoc : forall a b c, max (max a b) c =<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;max a (max b c).<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="succ_nf2"></a>succ_nf2 : forall c a n b, nf2 c (cons a n b) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf2 (succ c) (cons a n b).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="succ_nf"></a>succ_nf : forall a, nf a -&gt; nf (succ a).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="lt_succ"></a>lt_succ :  forall a, a &lt; succ a.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="phi0_log"></a>phi0_log : forall a, a &lt; phi0 (succ (log a)).<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="plus_zero"></a>plus_zero : forall a, zero + a  = a.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="plus_a_zero"></a>plus_a_zero : forall a, nf a -&gt; a + zero = a.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="plus_fin_omega"></a>plus_fin_omega : forall n ,F n + omega = omega.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="plus_not_comm"></a>plus_not_comm : {a:T1 &amp; {b :T1 |<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf a /\ nf a /\ a + b  &lt;&gt; b + a}}.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="succ_is_plus_one"></a>succ_is_plus_one: forall a, nf a -&gt; succ a = a + F 1.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="plus_cons_cons_rw1"></a>plus_cons_cons_rw1 : forall a n b a' n' b',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a &lt; a' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons a n b + cons a' n' b' = cons a' n' b'.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="plus_cons_cons_rw2"></a>plus_cons_cons_rw2 : forall a n b n' b',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf (cons a n b) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf (cons a n' b') -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;plus (cons a n b) (cons a n' b')=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons a (S (n + n') ) b'.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="plus_cons_cons_rw3"></a>plus_cons_cons_rw3 : forall a n b a' n' b',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a' &lt; a -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf (cons a n b) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf (cons a' n' b') -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons a n b + cons a' n' b'=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons a n (b + (cons a' n' b')).<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="ap_plus"></a>ap_plus : forall a, ap a -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;forall b c, nf b -&gt; nf c -&gt; b &lt; a -&gt; c &lt; a -&gt; b + c &lt;  a.<br/>
+
+<br/>
+<br/>
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="ap_plusR"></a>ap_plusR : forall c, nf c -&gt; c &lt;&gt; zero -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(forall a b, nf a -&gt; nf b -&gt;  a &lt; c -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b &lt; c -&gt; a + b &lt; c)  -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ap c.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="plus_nf0"></a>plus_nf0 : forall a, nf a -&gt; forall b c, b &lt; phi0 a -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;c &lt; phi0 a -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf b -&gt; nf c -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf (b + c).<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="plus_nf"></a>plus_nf : forall a,  nf a -&gt; forall b, nf b -&gt; nf (a + b).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="plus_to_cons"></a>plus_to_cons:  forall a n b,<br/>
+&nbsp;&nbsp;&nbsp;nf (cons a n b) -&gt; omega_term a n + b =<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons  a n b.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="plus_is_zero"></a>plus_is_zero : forall a b, nf a -&gt; nf b -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a + b  = zero -&gt; a = zero /\<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b = zero.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="lt_succ_succ"></a>lt_succ_succ : forall a b,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a &lt; b -&gt; nf a -&gt; nf b -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;succ a &lt; succ b.<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="lt_phi0_phi0"></a>lt_phi0_phi0 : forall a b, a &lt; b -&gt; phi0 a &lt; phi0 b.<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="le_phi0_phi0"></a>le_phi0_phi0 : forall a b, a &lt;= b  -&gt; phi0 a &lt;= phi0 b.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="le_succ_succ"></a>le_succ_succ : forall a b, nf a -&gt; nf b -&gt;<br/>
+&nbsp;&nbsp;&nbsp;a &lt;= b -&gt; succ a &lt;= succ b.<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="lt_succ_le_R"></a>lt_succ_le_R : forall a,  nf a -&gt; forall b, nf b -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;succ a &lt;= b -&gt;  a &lt; b .<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="lt_succ_le_2"></a>lt_succ_le_2 : forall a,  nf a -&gt; forall b, nf b -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a &lt; succ b -&gt;  a &lt;= b.<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="lt_succ_le"></a>lt_succ_le : forall a,  nf a -&gt; forall b, nf b -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a &lt; b -&gt; succ a &lt;=  b.<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="minus_lt"></a>minus_lt : forall a b, a &lt; b -&gt; a - b = zero.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="minus_a_a"></a>minus_a_a : forall a, a - a = zero.<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="minus_le"></a>minus_le : forall a b, a &lt;= b -&gt; a - b = zero.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="mult_fin_omega"></a>mult_fin_omega : forall n,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(F (S n)) * omega = omega.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="phi0_plus_mult"></a>phi0_plus_mult : forall a b, nf a -&gt; nf b -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;phi0 (a + b) = phi0 a * phi0 b.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+operations on T1 extend operations on nat 
+</div>
+<code>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="succ_compat"></a>succ_compat : forall n:nat, succ (F n) = F (S n).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="plus_compat"></a>plus_compat: forall n p, F n + F p = F (n + p)%nat.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="mult_compat"></a>mult_compat : forall n p,  (F n) * (F p) =<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;F (n * p)%nat.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="exp_F_compat"></a>exp_F_compat :<br/>
+&nbsp;forall p n, exp_F (F n) p =<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;F (n ^ p)%nat.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="exp_compat"></a>exp_compat : forall p n, (F n) ^ (F p) =<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;F (n ^  p)%nat.<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="mult_0_a"></a>mult_0_a : forall a, zero * a  = zero.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="mult_a_0"></a>mult_a_0 : forall a, a * zero = zero.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="mult_1_a"></a>mult_1_a : forall a, nf a -&gt; (F 1) * a = a.<br/>
+
+<br/>
+
+<br/>
+&nbsp;<span class="keyword">Lemma</span> <a name="mult_a_1"></a>mult_a_1 : forall a, nf a -&gt; a *  (F 1)  = a.<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="exp_fin_omega"></a>exp_fin_omega : forall n, (F (S (S n)))^ omega = omega.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="omega_exp_rw"></a>omega_exp_rw : forall a, nf a -&gt; omega ^ a =  phi0 a.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="omega_term_ambiguity"></a>omega_term_ambiguity : forall a n, nf a -&gt; omega_term a n =<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(omega ^ a) * (F (S n)).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="cons_ambiguity"></a>cons_ambiguity : forall a n b, nf(cons a n b) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons a n b = (omega^a)*(F (S n))+b.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="cons_unicity"></a>cons_unicity : forall a n b a' n' b',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf (cons a n b) -&gt; nf (cons a' n' b') -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(omega^a)*(F (S n))+b = (omega^a')*(F (S n'))+b' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a=a' /\ n = n' /\ b = b'.<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Theorem</span> <a name="Cantor_normal_form"></a>Cantor_normal_form :<br/>
+&nbsp;&nbsp;forall o, zero &lt; o -&gt; nf o -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{a:T1 &amp; {n: nat &amp;{b : T1 | o = omega ^ a * (F (S n)) + b  /\<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf (cons a n b) /\<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(forall a' n' b', nf (cons a' n' b') -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;o = omega ^ a' * (F (S n')) + b' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a = a' /\ n=n' /\ b = b' )}}}.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="trichotomy"></a>trichotomy : forall a b, a &lt; b \/ a = b \/ b &lt; a.<br/>
+
+<br/>
+<span class="keyword">Ltac</span> tricho t t' Hname := case (trichotomy t t');<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[auto with T1 | <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;auto with T1 | <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;intro Hname |<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;intros [Hname|Hname]].<br/>
+
+<br/>
+</code>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/><font size="-1">This page has been generated by <a href="http://coq.inria.fr">coqdoc</a></font>
+</div>
+
+</div>
+
+</body>
+</html>

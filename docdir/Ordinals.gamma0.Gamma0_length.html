@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link href="coqdoc.css" rel="stylesheet" type="text/css"/>
+<title>Ordinals.gamma0.Gamma0_length</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Ordinals.gamma0.Gamma0_length</h1>
+
+<code>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Arith.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Omega. <br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Compare_dec.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Relations.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Wellfounded.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Max.<br/>
+
+<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.prelude.Tools.html">Tools</a>.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.prelude.More_nat.html">More_nat</a>.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.prelude.AccP.html">AccP</a>.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.gamma0.Gamma0_prelude.html">Gamma0_prelude</a>.<br/>
+
+<br/>
+<span class="keyword">Section</span> on_length.<br/>
+
+<br/>
+&nbsp;Open Scope nat_scope.<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Fixpoint</span> <a name="nbterms"></a>nbterms (t:T2) : nat :=<br/>
+&nbsp;&nbsp;match t with <a name="zero"></a>zero =&gt; 0<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| cons a b n v =&gt; (S n) + nbterms v<br/>
+&nbsp;&nbsp;end.<br/>
+
+<br/>
+<span class="keyword">Fixpoint</span> <a name="length"></a>length (t:T2) : nat :=<br/>
+&nbsp;&nbsp;match t  with <a name="zero"></a>zero =&gt; 0<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| cons a b n v =&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nbterms (cons a b n v) + <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2 * (max (length a) (max (length b) (length_aux v)))<br/>
+&nbsp;&nbsp;end<br/>
+with <a name="length_aux"></a>length_aux (t:T2) : nat :=<br/>
+&nbsp;match t with <a name="zero"></a>zero =&gt; 0<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| cons a b n v =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;max (length a) (max (length b) (length_aux v))<br/>
+&nbsp;end.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="length_a"></a>length_a : forall a b n v, length a &lt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;length (cons a b n v).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="length_b"></a>length_b : forall a b n v, length b &lt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;length (cons a b n v).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="length_c"></a>length_c : forall a b n v, length v &lt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;length (cons a b n v).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="length_n"></a>length_n : forall a b r n p, n &lt; p -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;length (cons a b n r) &lt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;length (cons a b p r).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="length_psi"></a>length_psi : forall a b n c,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;length [a, b] &lt;= length (cons a b n c).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="length_ab"></a>length_ab : forall a b, length a + length b &lt;= length (cons a b 0 zero).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="length_abnc"></a>length_abnc : forall a b n c, <br/>
+&nbsp;&nbsp;&nbsp;length a + length b &lt;= length (cons a b n c).<br/>
+
+<br/>
+<span class="keyword">End</span> on_length.<br/>
+
+<br/>
+</code>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/><font size="-1">This page has been generated by <a href="http://coq.inria.fr">coqdoc</a></font>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link href="coqdoc.css" rel="stylesheet" type="text/css"/>
+<title>Ordinals.prelude.dickson</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Ordinals.prelude.dickson</h1>
+
+<code>
+</code>
+
+<div class="doc">
+<a name="lab1"></a><h1>Dickson Lemma: the multiset extension of a well-founded ordering is well-founded.</h1 class="section">
+
+ 
+</div>
+<code>
+
+<br/>
+
+<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Relations.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> List.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.prelude.closure.html">closure</a>.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.prelude.more_list.html">more_list</a>.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Multiset.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.prelude.list_permut.html">list_permut</a>.<br/>
+
+<br/>
+<span class="keyword">Module</span> <a name="Make"></a>Make (DS1 : decidable_set.S).<br/>
+
+<br/>
+<span class="keyword">Module</span> <a name="DS"></a>DS := DS1.<br/>
+<span class="keyword">Module</span> <a name="LP"></a>LP := list_permut.Make (DS1).<br/>
+<span class="keyword">Import</span> LP.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+<a name="lab2"></a><h2>Definition of the multiset extension of a relation.</h2 class="section">
+
+</div>
+<code>
+<span class="keyword">Inductive</span> <a name="multiset_extension_step"></a>multiset_extension_step (R : relation elt) : list elt -&gt; list elt -&gt; Prop :=<br/>
+&nbsp;&nbsp;| <a name="rmv_case"></a>rmv_case : <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forall l1 l2 l la a, (forall b, In b la -&gt; R b a) -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list_permut l1 (la ++ l) -&gt; list_permut l2 (a :: l) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;multiset_extension_step R l1 l2.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+If n &lt;&lt; {a} U m, then 
+      either, there exists n' such that n = {a} U n' and n' &lt;&lt; m,
+      or, there exists k, such that n = k U m, and k &lt;&lt; {a}. 
+</div>
+<code>
+<span class="keyword">Lemma</span> <a name="two_cases"></a>two_cases :<br/>
+&nbsp;forall R a m n, <br/>
+&nbsp;multiset_extension_step R n (a :: m) -&gt;<br/>
+&nbsp;(exists n', list_permut n (a :: n') /\ <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;multiset_extension_step R n' m) \/<br/>
+&nbsp;(exists k, (forall b, In b k -&gt; R b a) /\ <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list_permut n (k ++ m)).<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+<code>multiset_extension_step</code> is compatible with permutation. 
+</div>
+<code>
+<span class="keyword">Lemma</span> <a name="list_permut_multiset_extension_step_1"></a>list_permut_multiset_extension_step_1 :<br/>
+&nbsp;&nbsp;forall R l1 l2 l, list_permut l1 l2 -&gt; <br/>
+&nbsp;&nbsp;multiset_extension_step R l1 l -&gt; multiset_extension_step R l2 l.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="list_permut_multiset_extension_step_2"></a>list_permut_multiset_extension_step_2 :<br/>
+&nbsp;&nbsp;forall R l1 l2 l, list_permut l1 l2 -&gt; <br/>
+&nbsp;&nbsp;multiset_extension_step R l l1 -&gt; multiset_extension_step R l l2.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="context_multiset_extension_step_app1"></a>context_multiset_extension_step_app1 :<br/>
+&nbsp;&nbsp;forall R l1 l2 l, multiset_extension_step R l1 l2 -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;multiset_extension_step R (l ++ l1) (l ++ l2).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="context_trans_clos_multiset_extension_step_app1"></a>context_trans_clos_multiset_extension_step_app1 :<br/>
+&nbsp;&nbsp;forall R l1 l2 l, trans_clos (multiset_extension_step R) l1 l2 -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;trans_clos (multiset_extension_step R) (l ++ l1) (l ++ l2).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="context_multiset_extension_step_app2"></a>context_multiset_extension_step_app2 :<br/>
+&nbsp;&nbsp;forall R l1 l2 l, multiset_extension_step R l1 l2 -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;multiset_extension_step R (l1 ++ l) (l2 ++ l).<br/>
+
+<br/>
+Add Morphism multiset_extension_step : mult_morph.<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+<a name="lab3"></a><h3>Accessibility lemmata.</h3 class="section">
+
+</div>
+<code>
+<span class="keyword">Lemma</span> <a name="list_permut_acc"></a>list_permut_acc :<br/>
+&nbsp;&nbsp;forall R l1 l2, list_permut l2 l1 -&gt; <br/>
+&nbsp;&nbsp;Acc (multiset_extension_step R) l1 -&gt; Acc (multiset_extension_step R) l2.<br/>
+
+<br/>
+Add Morphism (fun R =&gt; Acc (multiset_extension_step R)) : acc_morph.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="dickson_aux1"></a>dickson_aux1 :<br/>
+forall (R : relation elt) a,<br/>
+&nbsp;(forall b, R b a -&gt; <br/>
+&nbsp;&nbsp;forall m, Acc (multiset_extension_step R) m -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Acc (multiset_extension_step R) (b :: m)) -&gt;<br/>
+&nbsp;forall m, Acc (multiset_extension_step R) m -&gt; <br/>
+&nbsp;(forall m', (multiset_extension_step R) m' m -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Acc (multiset_extension_step R) (a :: m')) -&gt;<br/>
+&nbsp;Acc (multiset_extension_step R) (a :: m).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="dickson_aux2"></a>dickson_aux2 :<br/>
+forall R m,<br/>
+&nbsp;&nbsp;Acc (multiset_extension_step R) m -&gt;<br/>
+&nbsp;&nbsp;forall a, (forall b, R b a -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;forall m, Acc (multiset_extension_step R) m -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Acc (multiset_extension_step R) (b :: m)) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;Acc (multiset_extension_step R) (a :: m).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="dickson_aux3"></a>dickson_aux3 :<br/>
+forall R a, Acc R a -&gt; forall m, Acc (multiset_extension_step R) m -&gt;<br/>
+Acc (multiset_extension_step R) (a :: m).<br/>
+
+<br/>
+</code>
+
+<div class="doc">
+Main lemma. 
+</div>
+<code>
+<span class="keyword">Lemma</span> <a name="dickson"></a>dickson : <br/>
+&nbsp;&nbsp;forall R, well_founded R -&gt; well_founded (multiset_extension_step R).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="multiset_closure"></a>multiset_closure :<br/>
+&nbsp;&nbsp;forall R p q, transitive _ R -&gt;<br/>
+&nbsp;&nbsp;closure.trans_clos (multiset_extension_step R) p q -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exists p', exists q', exists pq,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list_permut p (p' ++ pq) /\<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list_permut q (q' ++ pq) /\<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;q' &lt;&gt; nil /\<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(forall a, In a p' -&gt; exists b, In b q' /\ R a b).<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">End</span> Make.<br/>
+
+<br/>
+</code>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/><font size="-1">This page has been generated by <a href="http://coq.inria.fr">coqdoc</a></font>
+</div>
+
+</div>
+
+</body>
+</html>

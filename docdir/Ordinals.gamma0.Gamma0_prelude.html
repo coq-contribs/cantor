@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link href="coqdoc.css" rel="stylesheet" type="text/css"/>
+<title>Ordinals.gamma0.Gamma0_prelude</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Ordinals.gamma0.Gamma0_prelude</h1>
+
+<code>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Arith.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Omega. <br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Compare_dec.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Relations.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Wellfounded.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Max.<br/>
+
+<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.prelude.Tools.html">Tools</a>.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.prelude.More_nat.html">More_nat</a>.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.prelude.AccP.html">AccP</a>.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.prelude.not_decreasing.html">not_decreasing</a>.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.epsilon0.EPSILON0.html">EPSILON0</a>.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.prelude.More_nat.html">More_nat</a>.<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Inductive</span> <a name="T2"></a>T2 : Set :=<br/>
+&nbsp;&nbsp;<a name="zero"></a>zero : T2<br/>
+| <a name="cons"></a>cons : T2 -&gt; T2  -&gt; nat -&gt; T2 -&gt; T2.<br/>
+
+<br/>
+<span class="keyword">Notation</span> "[ x , y ]" := (cons x y 0 zero) (at level 0) :g0_scope.<br/>
+
+<br/>
+Open Scope g0_scope.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="psi"></a>psi alpha beta  := [alpha, beta].<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="psi_term"></a>psi_term alpha :=<br/>
+&nbsp;&nbsp;match alpha with zero =&gt; zero<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| cons a b n c =&gt; [a, b]<br/>
+&nbsp;&nbsp;end.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="one"></a>one  := [zero,zero].<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="psi_eq"></a>psi_eq : forall a b, psi a b = [a,b].<br/>
+
+<br/>
+<span class="keyword">Ltac</span> fold_psi :=  rewrite &lt;- psi_eq.<br/>
+<span class="keyword">Ltac</span> fold_psis := repeat fold_psi.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="finite"></a>finite  p := match p with <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0 =&gt; zero<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| S q =&gt; cons zero zero q zero<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end.<br/>
+
+<br/>
+<span class="keyword">Notation</span> "'F' n" := (finite n)(at level 29) : g0_scope.<br/>
+
+<br/>
+<span class="keyword">Inductive</span> <a name="is_finite"></a>is_finite:  T2 -&gt;  Set := <br/>
+&nbsp;<a name="zero_finite"></a>zero_finite : is_finite zero<br/>
+|<a name="succ_finite"></a>succ_finite : forall n, is_finite (cons zero zero n zero).<br/>
+
+<br/>
+<span class="keyword">Hint</span> Constructors is_finite : T2.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="omega"></a>omega  := [zero,one].<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="epsilon0"></a>epsilon0  := [one,zero].<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="epsilon"></a>epsilon alpha := [one, alpha].<br/>
+
+<br/>
+<span class="keyword">Fixpoint</span> <a name="T1_inj"></a>T1_inj (c:T1) : T2 :=<br/>
+&nbsp;match c with <a name="EPSILON0"></a>EPSILON0.zero =&gt; zero<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| EPSILON0.cons a n b =&gt; cons zero (T1_inj a) n (T1_inj b)<br/>
+&nbsp;end.<br/>
+
+<br/>
+<span class="keyword">Inductive</span> <a name="ap"></a>ap : T2 -&gt; Prop :=<br/>
+ap_intro : forall alpha beta, ap [alpha, beta].<br/>
+
+<br/>
+<span class="keyword">Inductive</span> <a name="lt"></a>lt : T2 -&gt; T2 -&gt; Prop :=<br/>
+| &nbsp;lt_1 : forall alpha beta n gamma,  zero &lt; cons alpha beta n gamma<br/>
+| &nbsp;lt_2 : forall alpha1 alpha2 beta1 beta2 n1 n2 gamma1 gamma2, <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;alpha1 &lt; alpha2 -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;beta1 &lt; cons alpha2 beta2 0 zero -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons alpha1 beta1 n1 gamma1 &lt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons alpha2 beta2 n2 gamma2<br/>
+| &nbsp;lt_3 : forall alpha1  beta1 beta2 n1 n2 gamma1 gamma2, <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;beta1 &lt; beta2 -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons alpha1 beta1 n1 gamma1 &lt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons alpha1 beta2 n2 gamma2<br/>
+<br/>
+| &nbsp;lt_4 : forall alpha1 alpha2 beta1 beta2 n1 n2 gamma1 gamma2, <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;alpha2 &lt; alpha1 -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons alpha1 beta1 0 zero &lt; beta2 -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons alpha1 beta1 n1 gamma1 &lt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons alpha2 beta2 n2 gamma2<br/>
+<br/>
+| lt_5 : forall alpha1 alpha2 beta1 n1 n2 gamma1 gamma2, <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;alpha2 &lt; alpha1 -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons alpha1 beta1 n1 gamma1 &lt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons alpha2  (cons alpha1 beta1 0 zero) n2 gamma2<br/>
+<br/>
+| lt_6 : forall alpha1 beta1  n1  n2 gamma1 gamma2,  (n1 &lt; n2)%nat -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons alpha1 beta1 n1 gamma1 &lt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons alpha1 beta1 n2 gamma2<br/>
+<br/>
+| &nbsp;&nbsp;lt_7 : forall alpha1 beta1 n1   gamma1 gamma2,  gamma1 &lt; gamma2 -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons alpha1 beta1 n1 gamma1 &lt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cons alpha1 beta1 n1 gamma2<br/>
+where  "o1 &lt; o2" := (lt o1 o2): g0_scope.<br/>
+<span class="keyword">Hint</span> Constructors lt : T2.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="le"></a>le t t' := t = t' \/ t &lt; t'.<br/>
+<span class="keyword">Hint</span> Unfold le : T2.<br/>
+
+<br/>
+<span class="keyword">Notation</span> "o1 &lt;= o2" := (le o1 o2): g0_scope.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="tail"></a>tail c := match c with | zero =&gt; zero <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| cons a b n c =&gt; c<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end.<br/>
+<span class="keyword">Inductive</span> <a name="nf"></a>nf : T2 -&gt; Prop :=<br/>
+| <a name="zero_nf"></a>zero_nf : nf zero<br/>
+| <a name="single_nf"></a>single_nf : forall a b n, nf a -&gt;  nf b -&gt; nf (cons a b n zero)<br/>
+| <a name="cons_nf"></a>cons_nf : forall a b n a' b' n' c', <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[a', b'] &lt; [a, b]  -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf a -&gt; nf b -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf(cons a' b' n' c')-&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nf(cons a b n (cons a' b' n' c')).<br/>
+<span class="keyword">Hint</span>  Constructors nf : T2.<br/>
+
+<br/>
+<span class="keyword">Fixpoint</span> <a name="succ"></a>succ (a:T2) : T2 :=<br/>
+&nbsp;match a with <a name="zero"></a>zero =&gt; finite 1<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| cons zero zero n c =&gt; finite (S (S n))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| cons a b n c =&gt; cons a b n (succ c)<br/>
+&nbsp;end.<br/>
+
+<br/>
+<span class="keyword">Fixpoint</span> <a name="pred"></a>pred  (a:T2) : option T2 :=<br/>
+&nbsp;match a  with <a name="zero"></a>zero =&gt; None<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| cons zero zero 0 zero =&gt; Some zero<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| cons zero zero (S n) zero =&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Some (cons zero zero n zero)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| cons a b n c =&gt; (match (pred c) with<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a name="Some"></a>Some c' =&gt; Some (cons a b n c')<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| None =&gt; None<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;end)<br/>
+&nbsp;end.<br/>
+
+<br/>
+<span class="keyword">Inductive</span> <a name="lt_epsilon0"></a>lt_epsilon0 : T2 -&gt; Prop :=<br/>
+&nbsp;&nbsp;<a name="zero_lt_e0"></a>zero_lt_e0 : lt_epsilon0 zero <br/>
+| <a name="cons_lt_e0"></a>cons_lt_e0 : forall  b n c,   lt_epsilon0 b -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lt_epsilon0 c -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lt_epsilon0 (cons zero b n c).<br/>
+
+<br/>
+
+<br/>
+</code>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/><font size="-1">This page has been generated by <a href="http://coq.inria.fr">coqdoc</a></font>
+</div>
+
+</div>
+
+</body>
+</html>

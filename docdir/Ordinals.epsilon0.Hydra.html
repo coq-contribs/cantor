@@ -1,0 +1,305 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link href="coqdoc.css" rel="stylesheet" type="text/css"/>
+<title>Ordinals.epsilon0.Hydra</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Ordinals.epsilon0.Hydra</h1>
+
+<code>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Arith.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> Omega.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> List.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.epsilon0.EPSILON0.html">EPSILON0</a>.<br/>
+<span class="keyword">Require</span> <span class="keyword">Import</span> <a class="modref" href="Ordinals.epsilon0.MSE0.html">MSE0</a>.<br/>
+
+<br/>
+<span class="keyword">Inductive</span> <a name="Hydra"></a>Hydra : Set :=<br/>
+|  <a name="head"></a>head : Hydra<br/>
+|  <a name="node"></a>node : Hydrae -&gt; Hydra<br/>
+with <a name="Hydrae"></a>Hydrae : Set :=<br/>
+| <a name="single"></a>single : Hydra -&gt; Hydrae<br/>
+| <a name="hcons"></a>hcons : Hydra -&gt; Hydrae -&gt; Hydrae.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="Lerne"></a>Lerne: Hydra :=<br/>
+&nbsp;node (hcons head<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(single (node (hcons<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(node (hcons (node (single head))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(single (node (hcons head (single head))))))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(single head))))).<br/>
+
+<br/>
+<span class="keyword">Scheme</span> Hydra_rect2 := Induction for Hydra Sort Type<br/>
+with   Hydrae_rect2 := Induction for Hydrae Sort Type.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="occurrence"></a>occurrence := list nat.<br/>
+
+<br/>
+Open Scope list_scope.<br/>
+<span class="keyword">Inductive</span> <a name="S1"></a>S1 : occurrence -&gt; Hydrae -&gt; Hydrae -&gt; Set :=<br/>
+| <a name="S1_first"></a>S1_first : forall s, S1 (0::nil) (hcons head s) s<br/>
+| <a name="S1_last"></a>S1_last : forall h, S1 (1::nil) (hcons h (single head)) (single h)<br/>
+| <a name="S1_rest"></a>S1_rest : forall i h s s', S1 (i::nil)%list s s' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;S1 (S i::nil) (hcons h s)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(hcons h s').<br/>
+
+<br/>
+<span class="keyword">Inductive</span> <a name="R1"></a>R1 : occurrence -&gt; Hydra -&gt; Hydra -&gt; Set :=<br/>
+| <a name="R1_single"></a>R1_single : R1 (0::nil) (node (single head)) head<br/>
+| <a name="R1_node"></a>R1_node   : forall u l l', S1 u l l' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;R1 u (node l) (node l').<br/>
+
+<br/>
+<span class="keyword">Fixpoint</span> <a name="replicate"></a>replicate (h:Hydra)(n:nat)(s:Hydrae){struct n}:Hydrae :=<br/>
+&nbsp;&nbsp;match n with <br/>
+&nbsp;&nbsp;| 0 =&gt; s<br/>
+&nbsp;&nbsp;| S p =&gt; hcons h (replicate h p s)<br/>
+&nbsp;&nbsp;end.<br/>
+
+<br/>
+<span class="keyword">Inductive</span> <a name="S2"></a>S2 (n:nat) : occurrence -&gt; Hydrae -&gt; Hydrae -&gt;  Set :=<br/>
+| <a name="S2_single"></a>S2_single : forall oc h h', R1 oc h h' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;S2 n (0::oc) (single h)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(replicate h' n (single h'))<br/>
+| <a name="S2_first"></a>S2_first : forall oc h h' s, R1 oc h h' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;S2 n (0::oc) (hcons h s)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(replicate h' (S n) s)<br/>
+<br/>
+| <a name="S2_rest"></a>S2_rest  : forall oc ocs  h s s', S2 n (oc::ocs) s s' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;S2 n (S oc::ocs) (hcons h s)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(hcons h s').<br/>
+
+<br/>
+<span class="keyword">Inductive</span> <a name="Rn"></a>Rn (n:nat) : occurrence -&gt; Hydra -&gt; Hydra -&gt; Set :=<br/>
+<br/>
+| <a name="Rn_here"></a>Rn_here : forall u l l', S2 n u l l' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rn n u (node l) (node l')<br/>
+| <a name="Rn_plus"></a>Rn_plus : forall u l l', Sn n u l l' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rn n u (node l) (node l')<br/>
+with <a name="Sn"></a>Sn (n:nat) : occurrence -&gt; Hydrae -&gt; Hydrae -&gt; Set :=<br/>
+|  <a name="Sn_single"></a>Sn_single : forall u h h', Rn n u h h' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sn n (0::u) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(single h) (single h')<br/>
+<br/>
+|  <a name="Sn_first"></a>Sn_first : forall h h' u r, Rn n u h h'-&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sn n (0::u) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(hcons h r) (hcons h' r)<br/>
+<br/>
+|  <a name="Rnl_rest"></a>Rnl_rest : forall h  occ u r r', Sn n (occ::u)r r' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sn n (S occ::u) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(hcons h r) (hcons h r').<br/>
+
+<br/>
+<span class="keyword">Scheme</span> Rn_rect2 := Induction for Rn Sort Type<br/>
+with   Sn_rect2 := Induction for Sn Sort Type.<br/>
+
+<br/>
+<span class="keyword">Inductive</span> <a name="Rh"></a>Rh (n:nat) : occurrence -&gt; Hydra -&gt; Hydra -&gt; Set :=<br/>
+&nbsp;<a name="depth1"></a>depth1 : forall occ h h', R1 occ h h' -&gt; Rh n occ h h'<br/>
+|<a name="depth2"></a>depth2 : forall occ h h', Rn n occ h h' -&gt; Rh n occ h h'.<br/>
+
+<br/>
+<span class="keyword">Inductive</span> <a name="Sh"></a>Sh (n:nat) : occurrence -&gt; Hydrae -&gt; Hydrae -&gt; Set :=<br/>
+| <a name="Sh_1"></a>Sh_1 : forall occ l l', S1 occ l l' -&gt; Sh n occ l l'<br/>
+| <a name="Sh_2"></a>Sh_2 : forall occ l l', S2 n occ l l' -&gt; Sh n occ l l'<br/>
+| <a name="Sh_3"></a>Sh_3 : forall occ l l', Sn n occ l l' -&gt; Sh n occ l l'.<br/>
+
+<br/>
+<span class="keyword">Fixpoint</span> <a name="head_at"></a>head_at (h:Hydra)(o:occurrence) {struct h}: bool :=<br/>
+&nbsp;match h, o with <a name="head"></a>head, nil =&gt; true<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| node hs, o =&gt; head_at_l hs o<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| _, _ =&gt; false<br/>
+&nbsp;end<br/>
+with <a name="head_at_l"></a>head_at_l (hs:Hydrae)(o:occurrence){struct hs} : bool :=<br/>
+&nbsp;match hs, o with <a name="single"></a>single h, 0::o' =&gt; head_at h o'<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| hcons h hs', 0::o' =&gt; head_at h o'<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| hcons h hs', S p::o' =&gt; head_at_l hs' (p::o')<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| _, _ =&gt; false<br/>
+end.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="head_at_nil"></a>head_at_nil : forall h, head_at h nil = true -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h = head.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="head_at_zero_nil"></a>head_at_zero_nil : forall h, head_at h (0::nil) = true -&gt;<br/>
+&nbsp;&nbsp;&nbsp;{h' : Hydrae | h = node (hcons head h')} + {h = node (single head)}.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="head_at_S_nil"></a>head_at_S_nil : forall h p, head_at h (S p::nil) = true -&gt;<br/>
+&nbsp;&nbsp;&nbsp;{h' : Hydrae &amp; {h0 : Hydra | h = node (hcons h0 h') /\ <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;head_at_l h' (p::nil) = true}}.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="head_at_O_cons"></a>head_at_O_cons : forall h l p, head_at h (0::p::l) = true -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{h0:Hydra &amp; {h' : Hydrae | h = node (hcons h0 h') /\<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;head_at h0 (p::l) = true}} + <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{h0:Hydra | h = node (single h0) /\ head_at h0 (p::l) = true}.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="head_at_S_cons"></a>head_at_S_cons : forall h l q p, head_at h (S q::p::l) = true -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{h0:Hydra &amp; {h' : Hydrae | h = node (hcons h0 h') /\<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;head_at_l h' (q::p::l) = true}}.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="head_at_l_nil"></a>head_at_l_nil : forall h, head_at_l h nil = true -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;False.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="head_at_l_zero_nil"></a>head_at_l_zero_nil : forall h, head_at_l h (0::nil) = true -&gt;<br/>
+&nbsp;&nbsp;&nbsp;{h' : Hydrae | h = (hcons head h')} + {h = (single head)}.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="head_at_l_S_nil"></a>head_at_l_S_nil : forall h p, head_at_l h (S p::nil) = true -&gt;<br/>
+&nbsp;&nbsp;&nbsp;{h' : Hydrae &amp; {h0 : Hydra | h =  (hcons h0 h') /\ <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;head_at_l h' (p::nil) = true}}.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="head_at_l_O_cons"></a>head_at_l_O_cons : forall h l p, head_at_l h (0::p::l) = true -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{h0:Hydra &amp; {h' : Hydrae | h =  (hcons h0 h') /\<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;head_at h0 (p::l) = true}} + <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{h0:Hydra | h =  (single h0) /\ head_at h0 (p::l) = true}.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="head_at_l_S_cons"></a>head_at_l_S_cons : forall h l q p, head_at_l h (S q::p::l) = true -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{h0:Hydra &amp; {h' : Hydrae | h =  (hcons h0 h') /\<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;head_at_l h' (q::p::l) = true}}.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="S1_head"></a>S1_head : forall o h h', S1 o h h' -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;head_at_l h o = true.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="R1_head"></a>R1_head : forall o h h', R1 o h h' -&gt; head_at h o = true.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="S2_head"></a>S2_head : forall n o h h', S2 n o h h' -&gt; head_at_l h o =<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;true.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="Rn_head"></a>Rn_head : forall n o h h', Rn n o h h' -&gt; head_at h o = true.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="Rh_head"></a>Rh_head : forall n o h h', Rh n o h h' -&gt; head_at h o = true.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="Sh_head"></a>Sh_head : forall n o h h', Sh n o h h' -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;head_at_l h o = true.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="Hydra_answers_nil"></a>Hydra_answers_nil :<br/>
+&nbsp;forall h, h &lt;&gt; head -&gt; head_at h nil = false.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="Hydra_answers"></a>Hydra_answers :<br/>
+&nbsp;forall h u n, h &lt;&gt; head -&gt; head_at h u = true -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{h':Hydra &amp; Rh n u h h'}.<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Fixpoint</span> <a name="h2o"></a>h2o (h:Hydra) : T1 :=<br/>
+&nbsp;&nbsp;match h with <a name="head"></a>head =&gt; zero<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| node hs =&gt; (sort (h2ol hs))<br/>
+end <br/>
+with <a name="h2ol"></a>h2ol (hs:Hydrae) : T1 :=<br/>
+&nbsp;&nbsp;match hs with <a name="single"></a>single h =&gt; (cons (h2o h) 0 zero)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| hcons h hs' =&gt; (cons (h2o h) 0 (h2ol hs'))<br/>
+&nbsp;end.<br/>
+
+<br/>
+<span class="keyword">Theorem</span> <a name="h2o_nf"></a>h2o_nf : forall h, nf (h2o h).<br/>
+
+<br/>
+<span class="keyword">Theorem</span> <a name="h2ol_nfs"></a>h2ol_nfs : forall hs, nfs (h2ol hs).<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="S1_decrease"></a>S1_decrease:<br/>
+&nbsp;&nbsp;forall u l l', S1 u l l' -&gt; exists a, ltM a (h2ol l') (h2ol l).<br/>
+&nbsp;Opaque T1_eq_dec.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="R1_decrease"></a>R1_decrease : forall u h h', R1 u h h' -&gt; h2o h' &lt;  h2o h.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="S2_decrease"></a>S2_decrease : forall n u l l', S2 n u l l' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exists a:T1, <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ltM a (h2ol l') (h2ol l).<br/>
+
+<br/>
+<span class="keyword">Theorem</span> <a name="Rn_decrease"></a>Rn_decrease : forall n u h h', Rn n u h h' -&gt; <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h2o h' &lt;  h2o h.<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+<span class="keyword">Theorem</span> <a name="Rh_decrease"></a>Rh_decrease : forall n u h h', Rh n u h h' -&gt; h2o h' &lt;  h2o h.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="Hercules_strat"></a>Hercules_strat := nat -&gt;  Hydra -&gt; occurrence.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="Hydra_strat"></a>Hydra_strat := nat -&gt; Hydra -&gt; occurrence -&gt; nat.<br/>
+
+<br/>
+<span class="keyword">Section</span> game.<br/>
+&nbsp;<span class="keyword">Variable</span> str : Hercules_strat.<br/>
+&nbsp;<span class="keyword">Hypothesis</span> str_ok : forall t h, head_at h (str t h) = true.<br/>
+&nbsp;<span class="keyword">Variable</span> str_hy : Hydra_strat.<br/>
+
+<br/>
+&nbsp;<span class="keyword">Inductive</span> <a name="Hercules_wins"></a>Hercules_wins  :  nat -&gt; Hydra  -&gt; Prop :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<a name="Now"></a>Now  : forall t, Hercules_wins t head<br/>
+&nbsp;|  <a name="Later"></a>Later  : forall t h , ( forall h', Rh (str_hy (S t) h (str (S t) h)) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(str (S t) h) h h' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hercules_wins t h' ) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hercules_wins t h.<br/>
+
+<br/>
+<span class="keyword">Definition</span> <a name="Hercules_ok"></a>Hercules_ok (alpha:T1) := forall t h, h2o h = alpha -&gt; <br/>
+&nbsp;&nbsp;&nbsp;Hercules_wins t h.<br/>
+
+<br/>
+<span class="keyword">Lemma</span> <a name="Winner"></a>Winner : forall alpha, nf alpha -&gt; Hercules_ok alpha.<br/>
+
+<br/>
+<span class="keyword">Theorem</span> <a name="Legend"></a>Legend : forall t h, Hercules_wins t h.<br/>
+
+<br/>
+<span class="keyword">End</span> game.<br/>
+
+<br/>
+Transparent T1_eq_dec.<br/>
+
+<br/>
+
+<br/>
+</code>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/><font size="-1">This page has been generated by <a href="http://coq.inria.fr">coqdoc</a></font>
+</div>
+
+</div>
+
+</body>
+</html>
