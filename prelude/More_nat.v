@@ -58,7 +58,7 @@ Lemma pred_of_power : forall b e, pred (power (S b) (S e)) =
  simpl;auto.
  rewrite (mult_comm b (S n)).
 simpl.
-ring_nat.
+ring.
 Qed.
 
 (* some tools *)

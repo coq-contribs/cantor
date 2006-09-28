@@ -2335,7 +2335,7 @@ Proof.
  rewrite mult_compat.
  assert ( (S (S n0) * S (S n0) ^ p) =
     (S (S n0) ^ p + (S (S n0) ^ p + n0 * S (S n0) ^ p)))%nat.
- ring_nat.
+ ring.
  rewrite H;trivial.
 Qed.
 

@@ -146,7 +146,7 @@ Proof.
  intros a n b p l l' H c; simpl.
  case (T1_eq_dec c a); case (T1_eq_dec c b); 
   simpl; case (H c); auto.
- intros;ring_nat.
+ intros;ring.
 Qed.
 
 Lemma app_equiv_comm : forall l l', equiv (l :: l') (l' :: l).

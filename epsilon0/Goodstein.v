@@ -254,7 +254,7 @@ Definition Pred_omega_a : forall a, zero < a -> c = cons a 0 zero -> pred_spec c
  pred_exhib H15 u.
  rewrite e0.
  simpl.
- ring_nat.
+ ring.
 Defined.
 
 (*  if c = omega^a*(k+2),
@@ -369,7 +369,7 @@ Definition Pred_omega_an : forall a k, (S k < N)%nat ->
  pred_exhib H15 u.
  rewrite e0.
  simpl.
- ring_nat.
+ ring.
 Defined.
 
 
@@ -453,9 +453,8 @@ Definition Pred_omega_anb : forall a k b,  ((S k) < N)%nat ->
  auto.
  pred_exhib H8 r.
  rewrite e0.
- ring_nat.
  simpl.
- ring_nat.
+ ring.
 Defined.
 
 
