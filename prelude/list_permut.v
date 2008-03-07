@@ -162,7 +162,7 @@ Save.
 
 Add Morphism (In (A :=elt)) : in_morph.
 Proof.
-intros; split; intros.
+intros y x1 x2; split; intros.
 apply in_permut_in with x1; trivial.
 apply in_permut_in with x2; trivial; apply list_permut_sym; trivial.
 Qed.
@@ -236,8 +236,8 @@ Save.
 
 Add Morphism (List.app (A:=elt)) : app_morph.
 Proof.
-intros.
-apply list_permut_trans with (x1 ++ x3).
+intros x y H1 x' y' H2.
+apply list_permut_trans with (x ++ y').
 apply context_list_permut_app1; trivial.
 apply context_list_permut_app2; trivial.
 Qed.

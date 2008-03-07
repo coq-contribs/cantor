@@ -224,7 +224,7 @@ apply dickson_aux3; trivial.
 Qed.
 
 Lemma multiset_closure :
-  forall R p q, transitive _ R ->
+  forall R p q, Coq.Relations.Relation_Definitions.transitive _ R ->
   closure.trans_clos (multiset_extension_step R) p q -> 
 	exists p', exists q', exists pq,
    	list_permut p (p' ++ pq) /\
