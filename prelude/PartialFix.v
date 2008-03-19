@@ -38,7 +38,7 @@ Section Acc_iterP.
 Fixpoint Acc_iter_partial (x:T) (H:D x) (a:Acc lt x) {struct a} : P x :=
     F  (x:=x)
      (fun (y:T) (h: lt y  x) =>
-          Acc_iter_partial (lt_D h) (Acc_inv a h))H .
+          Acc_iter_partial (lt_D h) (Acc_inv a _ h))H .
 
 
 End Acc_iterP.
@@ -66,7 +66,7 @@ Definition PFix (x:T)(H:D x) := Acc_iter_partial P F H (D_Acc  H).
 Lemma PFix_F_eq :
    forall (x:T)(H:D x)(r:Acc lt x),
     F  (fun (y:T) (h: lt y x) => 
-      Acc_iter_partial P F (lt_D  h) (Acc_inv  r h))H  = 
+      Acc_iter_partial P F (lt_D  h) (Acc_inv  r y h))H  = 
       Acc_iter_partial P F H r.
   Proof.
    destruct r using Acc_inv_dep.
