@@ -23,6 +23,7 @@ Set Implicit Arguments.
 
 Require Import Relations.
 Require Import List.
+Require Import Setoid.
 Require Import closure.
 Require Import more_list.
 Require Import Multiset.
@@ -133,10 +134,9 @@ rewrite <- app_ass; apply context_list_permut_app2; trivial.
 rewrite app_comm_cons; apply context_list_permut_app2; trivial.
 Qed.
 
-
-Add Morphism multiset_extension_step : mult_morph.
+Add Morphism (@multiset_extension_step R) with signature (list_permut ==> list_permut ==> iff) as mult_morph.
 Proof.
-intros R l1 l2 P12 l3 l4 P34; split; [intro R13 | intro R24].
+intros l1 l2 P12 l3 l4 P34; split; [intro R13 | intro R24].
 apply list_permut_multiset_extension_step_2 with l3; trivial.
 apply list_permut_multiset_extension_step_1 with l1; trivial.
 apply list_permut_multiset_extension_step_2 with l4; auto;
@@ -153,9 +153,9 @@ inversion A1; apply H; subst;
 setoid_rewrite <- Meq; trivial.
 Qed.
 
-Add Morphism (fun R => Acc (multiset_extension_step R)) : acc_morph.
+Add Morphism (Acc (multiset_extension_step R)) with signature (list_permut ==> iff) as acc_morph.
 Proof.
-intros R l1 l2 P; split; [intro A1 | intro A2].
+intros l1 l2 P; split; [intro A1 | intro A2].
 apply list_permut_acc with l1; trivial; setoid_rewrite <- P; auto.
 apply list_permut_acc with l2; trivial.
 Qed.
