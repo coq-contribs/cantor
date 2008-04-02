@@ -2801,7 +2801,7 @@ Lemma phi_mono_r : forall a b c, nf a -> nf b -> nf c ->
  intro; subst c1; lt_clean.
  case n;auto with T2.
  assert (nf (cons c1 c2 0 (finite n))).
- case n;repeat constructor.
+ case n.
  inversion Hc;auto with T2.
  inversion Hc;auto with T2.
  intro; simpl; constructor.

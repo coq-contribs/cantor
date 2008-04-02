@@ -116,8 +116,7 @@ Section predecessor.
   auto with arith.
   simpl; right; constructor 3.
   auto with arith.
-  repeat constructor.
-  auto.
+  constructor; [ auto | .. ]; constructor.
  Defined.
 
 
