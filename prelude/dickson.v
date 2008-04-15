@@ -134,7 +134,7 @@ rewrite <- app_ass; apply context_list_permut_app2; trivial.
 rewrite app_comm_cons; apply context_list_permut_app2; trivial.
 Qed.
 
-Add Morphism (@multiset_extension_step R) with signature (list_permut ==> list_permut ==> iff) as mult_morph.
+Add Parametric Morphism R : (@multiset_extension_step R) with signature (list_permut ==> list_permut ==> iff) as mult_morph.
 Proof.
 intros l1 l2 P12 l3 l4 P34; split; [intro R13 | intro R24].
 apply list_permut_multiset_extension_step_2 with l3; trivial.
@@ -153,7 +153,7 @@ inversion A1; apply H; subst;
 setoid_rewrite <- Meq; trivial.
 Qed.
 
-Add Morphism (Acc (multiset_extension_step R)) with signature (list_permut ==> iff) as acc_morph.
+Add Parametric Morphism R : (Acc (multiset_extension_step R)) with signature (list_permut ==> iff) as acc_morph.
 Proof.
 intros l1 l2 P; split; [intro A1 | intro A2].
 apply list_permut_acc with l1; trivial; setoid_rewrite <- P; auto.
