@@ -326,7 +326,7 @@ apply (f_equal (fun n => list_size size l + n));
 apply plus_comm.
 Qed.
 
-Add Morphism (fun size => list_size (A:=elt) size) : list_size_morph.
+Add Parametric Morphism size : (@list_size elt size) with signature (list_permut ==> @eq nat) as list_size_morph.
 Proof.
 apply list_permut_size.
 Qed.
@@ -345,7 +345,7 @@ apply list_permut_add_cons_inside; rewrite <- map_app;
 apply (IHl1 _ (list_permut_remove_hd l l0 P)).
 Qed.
 
-Add Morphism (fun l => fun f : elt -> elt => map f l) : map_morph.
+Add Parametric Morphism f : (map f) with signature list_permut ==> list_permut as map_morph.
 Proof.
 intros; apply list_permut_map; trivial.
 Qed.
