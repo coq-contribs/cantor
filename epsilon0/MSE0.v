@@ -749,7 +749,7 @@ Proof.
  induction l; destruct l'.
  intros; absurd (ltM a zero zero);auto.
  unfold ltM;simpl.
- red; case 1.
+ red; case (1).
  destruct 2.
  inversion H2.
  simpl.
