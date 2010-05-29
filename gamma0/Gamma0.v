@@ -1143,7 +1143,6 @@ right; constructor 2.
  auto.
  right;constructor 5;auto with T2.
  right;constructor 6;auto with T2.
- Unfocus.
  Focus 2.
  intros.
  simpl.
