@@ -89,7 +89,7 @@ Qed.
 (* First, we want to explore interactively the reachable items *)
 
 Definition next (q:item) : {q' : item | Rg q q'} + {final q}.
- intros q; case q ; intros b x y z.
+ case q ; intros b x y z.
  case z.
   case y.
    case x;auto.

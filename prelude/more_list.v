@@ -172,7 +172,7 @@ Definition list_rec3 (A : Set) (size : A -> nat) :
     (forall (n:nat) (l : list A), list_size size l <= n -> P l) -> 
     forall l : list A, P l.
 Proof.
-intros A size P H l; apply (H (list_size size l) l); apply le_n.
+intros P H l; apply (H (list_size size l) l); apply le_n.
 Defined.
 
 (** ** How to remove an element in a list, whenever it is present. *)
