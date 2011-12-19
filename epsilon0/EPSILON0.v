@@ -907,7 +907,7 @@ Proof.
  auto with arith.
  auto.
  nf_inv.
- decompose [or] H7.
+ destruct H7 as [|[|H8]].
  subst s'.
  apply nat_lt_cons.
  subst s'.
@@ -940,7 +940,7 @@ Proof.
  auto.
  apply head_lt_cons.
  nf_inv.
- decompose [or] H7.
+ destruct H7 as [|[|H8]].
  subst s'.
  apply nat_lt_cons.
  subst s'.
@@ -982,7 +982,7 @@ Proof.
  eapply Subterm.
  2:eleft.
  left;auto.
- decompose [or] H7.
+ destruct H7 as [|[|H8]].
  subst s'.
  apply nat_lt_cons.
  subst s'.
