@@ -1437,7 +1437,7 @@ Proof.
  2:eleft.
  left.
  auto with T2.
- decompose [or] H2.
+ destruct H2.
  subst s'.
  auto with T2.
  case H1.
@@ -1457,11 +1457,10 @@ Proof.
  inversion_clear 1.
  subst s'.
  apply rpo_2_2;auto with T2.
- decompose [or] H3; try subst s'.
+ destruct H3 as [|[|[]]]; unfold In in H2; try subst s'.
  apply nat_lt_psi.
  apply rpo_trans with (Term ord_psi (ta1 :: tb1 :: nil));auto with T2.
  apply rpo_2_2;auto with T2.
- case H4.
 Qed.
 
 Lemma rpo_2_1 : forall ta1 ta2 tb1 tb2 n1 n2 tc1 tc2,
@@ -1517,7 +1516,7 @@ right.
  eleft.
  reflexivity.
  left.
- decompose [or] H1;try subst s'.
+ destruct H1; unfold In in H; try subst s'.
  eapply rpo_trans with tb2;auto with T2.
  
  eapply Subterm.
@@ -1540,12 +1539,11 @@ Proof.
  simpl;auto with T2.
  inversion_clear 1; try subst s'.
  apply rpo_3_2;auto with T2.
- decompose [or] H2;try subst s'.
+ destruct H2 as [<-|[<-|[]]].
  apply nat_lt_psi.
  apply rpo_trans with (Term ord_psi (ta1 :: tb1 :: nil)).
 auto with T2.
   apply rpo_3_2;auto with T2.
- case H3.
 Qed.
 
 
@@ -1608,12 +1606,11 @@ Proof.
  simpl;auto with T2.
  inversion_clear 1; try subst s'.
  apply rpo_4_2;auto with T2.
- decompose [or] H2;try subst s'.
+ destruct H2 as [<-|[<-|[]]].
  apply nat_lt_psi.
  apply rpo_trans with (Term ord_psi (ta1 :: tb1 :: nil)).
  auto with T2.
  apply rpo_4_2;auto with T2.
- case H3.
 Qed.
 
 
@@ -1685,12 +1682,11 @@ Proof.
  simpl;auto with T2.
  inversion_clear 1; try subst s'.
  apply rpo_5_2;auto with T2.
- decompose [or] H1;try subst s'.
+ destruct H1 as [<-|[<-|[]]].
  apply nat_lt_psi.
  apply rpo_trans with (Term ord_psi (ta1 :: tb1 :: nil)).
  auto with T2.
  apply rpo_5_2;auto with T2.
- case H2.
 Qed.
 
 
@@ -1764,14 +1760,13 @@ Proof.
  eapply Subterm.
  2:eleft.
  left;auto with T2.
- decompose [or] H2;try subst s'.
+ destruct H2 as [<-|[<-|[]]].
  apply nat_lt_cons.
  eapply rpo_trans.
  eexact H.
  eapply Subterm.
  2:eleft.
  left;auto with T2.
- case H3.
 Qed.
 
 
@@ -1811,14 +1806,13 @@ Proof.
  eapply Subterm.
  2:eleft.
  left;auto with T2.
- decompose [or] H2;try subst s'.
+ destruct H2 as [<-|[<-|[]]].
  apply nat_lt_cons.
  eapply rpo_trans.
  eexact H.
  eapply Subterm.
  2:eleft.
  left;auto with T2. 
- case H3.
 Qed.
 
 
