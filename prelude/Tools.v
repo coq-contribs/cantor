@@ -18,6 +18,7 @@
     LaBRI, Université Bordeaux 1, and Inria Futurs (Logical)
 *)
 
+Global Set Asymmetric Patterns.
 
 Ltac caseEq f := generalize (refl_equal f); pattern f at -1; case f.
 

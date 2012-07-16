@@ -18,7 +18,7 @@
     LaBRI, Université Bordeaux 1, and Inria Futurs (Logical)
 *)
 
-
+Set Asymmetric Patterns.
 
 Require Import Arith.
 Require Import Omega.
