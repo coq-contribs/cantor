@@ -18,7 +18,7 @@
     LaBRI, Université Bordeaux 1, and Inria Futurs (Logical)
 *)
 
-Require Import Arith.
+Require Import Arith Omega.
 Require Import ArithRing.
 
 Require Import More_nat.
