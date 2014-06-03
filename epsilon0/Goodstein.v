@@ -24,6 +24,7 @@ Require Import ArithRing.
 Require Import EPSILON0.
 
 
+Unset Standard Proposition Elimination Names.
 
 (* Goodstein decompositions are just ordinals *)
 

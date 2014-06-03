@@ -44,6 +44,7 @@ Require Import List.
 
 
 Set Implicit Arguments.
+Unset Standard Proposition Elimination Names.
 
 
 (************************)

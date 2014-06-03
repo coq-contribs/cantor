@@ -43,6 +43,7 @@ Require Import term.
 Require Import rpo.
 
 Set Implicit Arguments.
+Unset Standard Proposition Elimination Names.
 
 (* About nf *)
 

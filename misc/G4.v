@@ -19,6 +19,7 @@
 *)
 
 Set Asymmetric Patterns.
+Unset Standard Proposition Elimination Names.
 
 Require Import Arith.
 Require Import Omega.

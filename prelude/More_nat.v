@@ -25,6 +25,7 @@ Require Import Omega.
 Require Import Max.
 
 Set Implicit Arguments.
+Unset Standard Proposition Elimination Names.
 
 Fixpoint power (base exp:nat){struct exp}:nat :=
   match exp with 0 => 1

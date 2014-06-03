@@ -25,6 +25,7 @@ Require Import EPSILON0.
 Require Import MSE0.
 
 
+Unset Standard Proposition Elimination Names.
 
 (* An hydra is a finitely branched tree *)
 

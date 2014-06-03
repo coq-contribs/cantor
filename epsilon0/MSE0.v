@@ -24,6 +24,8 @@ Require Import ArithRing.
 Require Import More_nat.
 Require Import EPSILON0.
 
+Unset Standard Proposition Elimination Names.
+
 (* we still not use Standard Library's multisets : should we ? *)
 
 
