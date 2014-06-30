@@ -15,7 +15,7 @@
 
 
 (*  Pierre Casteran 
-    LaBRI, Université Bordeaux 1, and Inria Futurs (Logical)
+    LaBRI, UniversitÃ© Bordeaux 1, and Inria Futurs (Logical)
 *)
 
 (* Veblen "pre" Normal form (for Gamma0) *)
@@ -1937,7 +1937,9 @@ Proof.
  simpl in Hsize;omega.
  auto with T2.
  auto with T2.
- auto with T2.
+ (* Below, an "auto with T2" was working before 28 June 2014, calling "nf_b2" *)
+ (* but nf_b2 refers to a2 and nf2 which are not anymore in the context. *)
+ eauto using nf_b.
  assert (rpo (T2_2_term c1) 
              (Term ord_psi (T2_2_term a1 :: T2_2_term b1 :: nil))).
  change (rpo (T2_2_term c1) (T2_2_term (cons a1 b1 0 zero))).
