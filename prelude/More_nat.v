@@ -27,12 +27,14 @@ Require Import Max.
 Set Implicit Arguments.
 Unset Standard Proposition Elimination Names.
 
+(* Now in Coq.Init.Nat
 Fixpoint power (base exp:nat){struct exp}:nat :=
   match exp with 0 => 1
                | S exp' => base * (power base exp')
   end.
-
 Notation "n ^ p" := (power n p):nat_scope.
+*)
+Notation power := Nat.pow (only parsing).
 
 Lemma power_of_1 : forall p, power 1 p = 1.
  induction p; simpl.
