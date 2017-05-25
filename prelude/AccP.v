@@ -15,7 +15,7 @@
 
 
 (*  Pierre Casteran 
-    LaBRI, Université Bordeaux 1, and Inria Futurs (Logical)
+    LaBRI, UniversitÃ© Bordeaux 1, and Inria Futurs (Logical)
 
     Yves Bertot (for AccElim3 )
 *)

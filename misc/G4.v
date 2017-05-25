@@ -15,7 +15,7 @@
 
 
 (*  Pierre Casteran 
-    LaBRI, Université Bordeaux 1, and Inria Futurs (Logical)
+    LaBRI, UniversitÃ© Bordeaux 1, and Inria Futurs (Logical)
 *)
 
 Set Asymmetric Patterns.
@@ -29,9 +29,9 @@ Require Import Relations.
 
 Record item :Set := quad {
                     base: nat ; 
-                    coeff2 :nat ; (* coefficient of b² *)
+                    coeff2 :nat ; (* coefficient of bÂ² *)
                     coeff1 :nat ; (* coefficient of b *)
-                    coeff0 :nat    (* coefficient of b° *) }.
+                    coeff0 :nat    (* coefficient of bÂ° *) }.
 
 
 (* relation between two consecutive items of the sequence *)
