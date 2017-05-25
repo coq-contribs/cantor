@@ -15,7 +15,7 @@
 
 
 (*  Pierre Casteran 
-    LaBRI, Université Bordeaux 1, and Inria Futurs (Logical)
+    LaBRI, UniversitÃ© Bordeaux 1, and Inria Futurs (Logical)
 *)
 Require Import Arith.
 Require Import Omega. (* ( :-) *)
@@ -35,7 +35,7 @@ Section on_length.
  Open Scope nat_scope.
 
 (* length of ordinal terms *)
-(* from Schütte, Proof theory, used in proofs of transitivity
+(* from SchÃ¼tte, Proof theory, used in proofs of transitivity
    and total ordering *)
    
 Fixpoint nbterms (t:T2) : nat :=

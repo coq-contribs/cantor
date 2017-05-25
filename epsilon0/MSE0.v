@@ -15,7 +15,7 @@
 
 
 (*  Pierre Casteran 
-    LaBRI, Universit� Bordeaux 1, and Inria Futurs (Logical)
+    LaBRI, Université Bordeaux 1, and Inria Futurs (Logical)
 *)
 
 Require Import Arith Omega.
@@ -270,7 +270,7 @@ Qed.
 
 
 (* the sorting function *)
-(* supprimer la préconditions nfs l *)
+(* supprimer la prÃ©conditions nfs l *)
 
 Fixpoint sort (alpha :T1) : T1 :=
  match alpha with zero => zero
