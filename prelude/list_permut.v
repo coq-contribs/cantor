@@ -158,7 +158,7 @@ rewrite (out_mult_O e l2 notInel2);
 intro M0; generalize (in_mult_S e l1 Inel1);
 rewrite M0; unfold ge;
 intro Abs; absurd (1<=0); trivial; inversion Abs.
-Save.
+Qed.
 
 Add Morphism (In (A :=elt)) : in_morph.
 Proof.
@@ -179,7 +179,7 @@ Lemma context_list_permut_cons :
 Proof.
 intros e l1 l2; unfold list_permut, meq; simpl.
 intros H a; rewrite (H a); trivial.
-Save.
+Qed.
 
 Add Morphism (List.cons (A:=elt)) : add_elt_morph.
 Proof.
@@ -232,7 +232,7 @@ rewrite (multiplicity_app l1 l);
 rewrite (multiplicity_app l2 l);
 rewrite (H a); 
 trivial.
-Save.
+Qed.
 
 Add Morphism (List.app (A:=elt)) : app_morph.
 Proof.
