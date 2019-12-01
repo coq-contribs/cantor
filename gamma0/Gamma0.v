@@ -43,7 +43,6 @@ Require Import term.
 Require Import rpo.
 
 Set Implicit Arguments.
-Unset Standard Proposition Elimination Names.
 
 (* About nf *)
 
@@ -1002,9 +1001,9 @@ Proof.
  case (compare alpha beta);(try discriminate 2; auto with T2).
 Qed.
 
-Implicit Arguments compare_gt_rw [alpha beta].
-Implicit Arguments compare_lt_rw [alpha beta].
-Implicit Arguments compare_eq_rw [alpha beta].
+Arguments compare_gt_rw [alpha beta].
+Arguments compare_lt_rw [alpha beta].
+Arguments compare_eq_rw [alpha beta].
 
 
 Hint Resolve compare_eq_rw compare_lt_rw compare_gt_rw.
